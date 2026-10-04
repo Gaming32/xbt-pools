@@ -27,3 +27,13 @@ export function queryParamToUnion<A extends readonly string[]>(
   }
   return fallback;
 }
+
+export function formatMetric(value: number, fractionDigits?: number) {
+  const prefixes = ["", "K", "M", "G", "T", "P", "E", "Z", "Y", "R", "Q"];
+  let prefixIndex = 0;
+  while (prefixIndex < prefixes.length - 1 && value >= 2000) {
+    prefixIndex++;
+    value /= 1000;
+  }
+  return `${value.toLocaleString(undefined, { maximumFractionDigits: fractionDigits })} ${prefixes[prefixIndex]}`;
+}

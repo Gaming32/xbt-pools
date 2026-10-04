@@ -5,7 +5,7 @@ import {
   type FetchedPools,
   type PoolFetchResult,
 } from "#shared/pools";
-import { queryParamToUnion, queryUnionRef } from "~/util";
+import { formatMetric, queryParamToUnion, queryUnionRef } from "~/util";
 import { HS_PER_THS, type Comparator } from "~~/shared/common";
 
 const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
@@ -80,8 +80,11 @@ const sortedPools = computed(() => {
       <li v-for="pool in sortedPools">
         <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a
         >:
-        <span v-if="!('fetchError' in pool)">
-          {{ pool.hashrateHS / HS_PER_THS }} TH/s
+        <span
+          v-if="!('fetchError' in pool)"
+          :title="`${pool.hashrateHS.toLocaleString()} H/s`"
+        >
+          {{ formatMetric(pool.hashrateHS, 2) }}H/s
         </span>
         <span v-else class="error">
           {{ pool.fetchError }}
