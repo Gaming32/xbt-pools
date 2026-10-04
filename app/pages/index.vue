@@ -1,0 +1,98 @@
+<script setup lang="ts">
+import {
+  poolRevenuePerDay,
+  type BitcoinPool,
+  type FetchedPools,
+  type PoolFetchResult,
+} from "#shared/pools";
+import { queryParamToUnion, queryUnionRef } from "~/util";
+import { HS_PER_THS, type Comparator } from "~~/shared/common";
+
+const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
+const SORT_DIRECTIONS = ["Asc", "Dec"] as const;
+
+const { data: pools, refresh } = await useFetch<FetchedPools>("/api/pools");
+
+const sortOption = queryUnionRef("sort", SORT_OPTIONS, "Revenue");
+const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "Dec");
+
+const sortedPools = computed(() => {
+  if (pools.value === undefined) {
+    return undefined;
+  }
+
+  let baseComparator: Comparator<BitcoinPool>;
+  switch (sortOption.value) {
+    case "Alphabetic":
+      baseComparator = (a, b) => a.info.name.localeCompare(b.info.name);
+      break;
+    case "Hashrate":
+      baseComparator = (a, b) => a.hashrateHS - b.hashrateHS;
+      break;
+    case "Revenue":
+      baseComparator = (a, b) => poolRevenuePerDay(a) - poolRevenuePerDay(b);
+      break;
+  }
+
+  let directionComparator: Comparator<BitcoinPool>;
+  switch (sortDirection.value) {
+    case "Asc":
+      directionComparator = baseComparator;
+      break;
+    case "Dec":
+      directionComparator = (a, b) => baseComparator(b, a);
+      break;
+  }
+
+  const comparator: Comparator<PoolFetchResult> = (a, b) => {
+    const aError = "fetchError" in a;
+    const bError = "fetchError" in b;
+    if (aError) {
+      if (bError) {
+        return a.info.name.localeCompare(b.info.name);
+      }
+      return 1;
+    }
+    if (bError) {
+      return -1;
+    }
+    return directionComparator(a, b);
+  };
+
+  return Object.values(pools.value).sort(comparator);
+});
+</script>
+
+<template>
+  <div>
+    <select v-model="sortOption">
+      <option v-for="option in SORT_OPTIONS">{{ option }}</option>
+    </select>
+    &thinsp;
+    <select v-model="sortDirection">
+      <option v-for="direction in SORT_DIRECTIONS">{{ direction }}</option>
+    </select>
+    &thinsp;
+    <button @click="refresh()">Refresh</button>
+  </div>
+  <div>
+    <ol>
+      <li v-for="pool in sortedPools">
+        <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a
+        >:
+        <span v-if="!('fetchError' in pool)">
+          {{ pool.hashrateHS / HS_PER_THS }} TH/s
+        </span>
+        <span v-else class="error">
+          {{ pool.fetchError }}
+        </span>
+      </li>
+    </ol>
+  </div>
+</template>
+
+<style lang="css" scoped>
+.error {
+  color: red;
+}
+</style>

@@ -1,0 +1,51 @@
+import type { PoolFetchResult } from ".";
+import { MULTIPLE_PER_BPS } from "../common";
+import { fetchMiningPool } from "../mempool";
+import { handleFetchError } from "./util";
+
+type StatsResponse = {
+  pool: {
+    fee_bps: number;
+    min_difficulty: number;
+    datum_port: number;
+    pubkey: string;
+  };
+  hashrate: {
+    pool_hs: number;
+  };
+  blocks: {
+    found: number;
+  };
+};
+
+const INFO = { name: "OmegaPool", homepage: "https://omegapool.tech" };
+const START_DATE = /* @__PURE__ */ new Date("2026-08-30T19:06:56Z").getTime(); // Block height 961866
+
+export async function fetchOmegaPool(): Promise<PoolFetchResult> {
+  try {
+    const [statsResponse, mempoolPool] = await Promise.all([
+      $fetch("https://omegapool.tech/stats.json") as Promise<StatsResponse>,
+      fetchMiningPool("omegapool"),
+    ]);
+    return {
+      info: INFO,
+      hashrateHS: statsResponse.hashrate.pool_hs,
+      feeMultiple: statsResponse.pool.fee_bps / MULTIPLE_PER_BPS,
+      stratumHashrateMultiple: 0,
+      stratumSkimMultiple: 0,
+      blocksInPeriod: {
+        ...mempoolPool.blockCount,
+        all: statsResponse.blocks.found,
+      },
+      poolStart: START_DATE,
+      connectInfo: {
+        poolHost: "omegapool.tech",
+        poolPort: statsResponse.pool.datum_port,
+        poolPubkey: statsResponse.pool.pubkey,
+      },
+      minDifficulty: statsResponse.pool.min_difficulty,
+    };
+  } catch (err) {
+    return handleFetchError(INFO, err);
+  }
+}
