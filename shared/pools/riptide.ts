@@ -27,7 +27,7 @@ type ContributorsResponse = Array<{
   }>;
 }>;
 
-const INFO = { name: "RIPTIDE", homepage: "https://riptide.maveth.ca" };
+const INFO = { name: "RIPTIDE", homepage: "https://riptide.maveth.ca/" };
 const START_DATE = /* @__PURE__ */ new Date("2026-08-30T21:54:30Z").getTime(); // Block height 961914
 
 export async function fetchRiptide(): Promise<PoolFetchResult> {
@@ -63,6 +63,7 @@ export async function fetchRiptide(): Promise<PoolFetchResult> {
         poolHost: infoResponse.join.pool_host,
         poolPort: infoResponse.join.pool_port,
         poolPubkey: infoResponse.join.pool_pubkey,
+        requireV3: false,
       },
       minDifficulty: 2048,
     };

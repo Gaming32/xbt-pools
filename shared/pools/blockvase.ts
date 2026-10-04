@@ -1,6 +1,5 @@
 import type { PoolFetchResult } from ".";
-import { fetchMiningPool } from "../mempool";
-import { handleFetchError } from "./util";
+import { fetchPrimaryAndMempool, handleFetchError } from "./util";
 
 type PoolResponse = {
   nethash: {
@@ -24,10 +23,11 @@ const START_DATE = /* @__PURE__ */ new Date("2026-09-13T16:35:34Z").getTime(); /
 
 export async function fetchBlockvase(): Promise<PoolFetchResult> {
   try {
-    const [poolResponse, mempoolPool] = await Promise.all([
-      $fetch("https://blockvase.com/api/pool") as Promise<PoolResponse>,
-      fetchMiningPool("blockvase"),
-    ]);
+    const [poolResponse, mempoolPool] =
+      await fetchPrimaryAndMempool<PoolResponse>(
+        "https://blockvase.com/api/pool",
+        "blockvase",
+      );
     return {
       info: INFO,
       hashrateHS: poolResponse.nethash.pool_hs,
@@ -44,6 +44,7 @@ export async function fetchBlockvase(): Promise<PoolFetchResult> {
         poolHost: poolResponse.pool.datum_host,
         poolPort: poolResponse.pool.datum_port,
         poolPubkey: poolResponse.pool.pool_pubkey,
+        requireV3: false,
       },
       minDifficulty: poolResponse.status.min_difficulty,
     };

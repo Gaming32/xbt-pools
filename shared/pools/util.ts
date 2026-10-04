@@ -1,5 +1,6 @@
 import { FetchError } from "ofetch";
 import type { BitcoinPoolInfo, PoolFetchError } from ".";
+import { fetchMiningPool, type MiningPoolResponse } from "../mempool";
 
 export function handleFetchError(
   info: BitcoinPoolInfo,
@@ -13,6 +14,16 @@ export function handleFetchError(
         ? `Status code ${error.response?.status}`
         : `Failed to fetch: ${error.cause || error.message}`,
   };
+}
+
+export function fetchPrimaryAndMempool<P>(
+  primaryRoute: string,
+  mempoolSlug: string,
+): Promise<[P, MiningPoolResponse]> {
+  return Promise.all([
+    $fetch(primaryRoute) as Promise<P>,
+    fetchMiningPool(mempoolSlug),
+  ]);
 }
 
 export const ONE_DAY_IN_SECONDS = 60 * 60 * 24;

@@ -7,7 +7,7 @@ import {
   ONE_WEEK_IN_SECONDS,
 } from "./util";
 
-const INFO = { name: "CONVOY", homepage: "https://convoy.xyz" };
+const INFO = { name: "CONVOY", homepage: "https://convoy.xyz/" };
 
 export async function fetchConvoy(): Promise<PoolFetchResult> {
   const currentDate = Date.now() / 1000;
@@ -47,6 +47,7 @@ export async function fetchConvoy(): Promise<PoolFetchResult> {
         poolPort: 28915,
         poolPubkey:
           "dbb11fa0c2b5403e4f798fa6071bb97e6079d219598366032fdf2ae01962b13c5e66e2be7d6b008f0b2603f3e6f6fc64768fa786c8129c46d3e30a5867734b62",
+        requireV3: true,
       },
       minDifficulty: 16384,
     };

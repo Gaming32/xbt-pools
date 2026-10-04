@@ -2,6 +2,7 @@ import { HS_PER_THS, type TimePeriod } from "../common";
 import { fetchBlockvase } from "./blockvase";
 import { fetchConvoy } from "./convoy";
 import { fetchOmegaPool } from "./omega-pool";
+import { fetchPaperclipPool } from "./paperclip-pool";
 import { fetchRiptide } from "./riptide";
 
 export type DatumConnectInfo = {
@@ -27,6 +28,7 @@ export type BitcoinPool = {
     poolHost: string;
     poolPort: number;
     poolPubkey: string;
+    requireV3: boolean;
   };
   minDifficulty: number;
 };
@@ -38,17 +40,14 @@ export type PoolFetchError = {
 
 export type PoolFetchResult = BitcoinPool | PoolFetchError;
 
-export type BitcoinPoolId = "blockvase" | "convoy" | "omegaPool" | "riptide";
-export const POOL_FETCHERS: Record<
-  BitcoinPoolId,
-  () => Promise<PoolFetchResult>
-> = {
+export const POOL_FETCHERS = {
   blockvase: fetchBlockvase,
   convoy: fetchConvoy,
   omegaPool: fetchOmegaPool,
+  paperclipPool: fetchPaperclipPool,
   riptide: fetchRiptide,
 };
-export type FetchedPools = Record<BitcoinPoolId, PoolFetchResult>;
+export type FetchedPools = Record<keyof typeof POOL_FETCHERS, PoolFetchResult>;
 
 export function poolRevenuePerDay(pool: BitcoinPool, hashrateHS = HS_PER_THS) {
   return 0; // TODO

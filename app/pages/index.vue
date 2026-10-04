@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import type { Comparator } from "#shared/common";
 import {
   poolRevenuePerDay,
   type BitcoinPool,
   type FetchedPools,
   type PoolFetchResult,
 } from "#shared/pools";
-import { formatMetric, queryParamToUnion, queryUnionRef } from "~/util";
-import { HS_PER_THS, type Comparator } from "~~/shared/common";
+import { formatMetric, queryUnionRef } from "~/util";
 
 const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
 const SORT_DIRECTIONS = ["Asc", "Dec"] as const;
