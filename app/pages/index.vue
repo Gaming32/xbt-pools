@@ -65,32 +65,38 @@ const sortedPools = computed(() => {
 
 <template>
   <div>
-    <select v-model="sortOption">
-      <option v-for="option in SORT_OPTIONS">{{ option }}</option>
-    </select>
-    &thinsp;
-    <select v-model="sortDirection">
-      <option v-for="direction in SORT_DIRECTIONS">{{ direction }}</option>
-    </select>
-    &thinsp;
-    <button @click="refresh()">Refresh</button>
-  </div>
-  <div>
-    <ol>
-      <li v-for="pool in sortedPools">
-        <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a
-        >:
-        <span
-          v-if="!('fetchError' in pool)"
-          :title="`${pool.hashrateHS.toLocaleString()} H/s`"
-        >
-          {{ formatMetric(pool.hashrateHS, 2) }}H/s
-        </span>
-        <span v-else class="error">
-          {{ pool.fetchError }}
-        </span>
-      </li>
-    </ol>
+    <div>
+      <select v-model="sortOption">
+        <option v-for="option in SORT_OPTIONS" :key="option">
+          {{ option }}
+        </option>
+      </select>
+      &thinsp;
+      <select v-model="sortDirection">
+        <option v-for="direction in SORT_DIRECTIONS" :key="direction">
+          {{ direction }}
+        </option>
+      </select>
+      &thinsp;
+      <button @click="refresh()">Refresh</button>
+    </div>
+    <div>
+      <ol>
+        <li v-for="pool in sortedPools" :key="pool.info.name">
+          <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a
+          >:
+          <span
+            v-if="!('fetchError' in pool)"
+            :title="`${pool.hashrateHS.toLocaleString()} H/s`"
+          >
+            {{ formatMetric(pool.hashrateHS, 2) }}H/s
+          </span>
+          <span v-else class="error">
+            {{ pool.fetchError }}
+          </span>
+        </li>
+      </ol>
+    </div>
   </div>
 </template>
 

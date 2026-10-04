@@ -1,5 +1,3 @@
-import type { LocationQuery } from "vue-router";
-
 export const TIME_PERIODS = ["24h", "1w", "all"] as const;
 export type TimePeriod = (typeof TIME_PERIODS)[number];
 

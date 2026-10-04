@@ -4,7 +4,7 @@ import { fetchMiningPool, type MiningPoolResponse } from "../mempool";
 
 export function handleFetchError(
   info: BitcoinPoolInfo,
-  error: any,
+  error: unknown,
 ): PoolFetchError {
   console.log("Error fetching pool", info.name, error);
   return {
@@ -12,7 +12,7 @@ export function handleFetchError(
     fetchError:
       error instanceof FetchError
         ? `Status code ${error.response?.status}`
-        : `Failed to fetch: ${error.cause || error.message}`,
+        : `Failed to fetch: ${error instanceof Error ? error.cause || error.message : error}`,
   };
 }
 
