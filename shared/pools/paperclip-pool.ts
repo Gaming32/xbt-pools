@@ -52,11 +52,13 @@ export async function fetchPaperclipPool(): Promise<PoolFetchResult> {
       poolStart: START_DATE,
       connectInfo: {
         poolHost: "pool.paperclippool.xyz",
-        poolPort: statusResponse.stats.pool.datum_port,
+        poolPortsByDifficulty: {
+          [statusResponse.stats.pool.min_difficulty]:
+            statusResponse.stats.pool.datum_port,
+        },
         poolPubkey: statusResponse.stats.pool.pubkey,
         requireV3: true,
       },
-      minDifficulty: statusResponse.stats.pool.min_difficulty,
     };
   } catch (err) {
     return handleFetchError(INFO, err);

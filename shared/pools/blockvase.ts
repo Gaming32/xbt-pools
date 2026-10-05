@@ -42,11 +42,12 @@ export async function fetchBlockvase(): Promise<PoolFetchResult> {
       poolStart: START_DATE,
       connectInfo: {
         poolHost: poolResponse.pool.datum_host,
-        poolPort: poolResponse.pool.datum_port,
+        poolPortsByDifficulty: {
+          [poolResponse.status.min_difficulty]: poolResponse.pool.datum_port,
+        },
         poolPubkey: poolResponse.pool.pool_pubkey,
         requireV3: false,
       },
-      minDifficulty: poolResponse.status.min_difficulty,
     };
   } catch (err) {
     return handleFetchError(INFO, err);

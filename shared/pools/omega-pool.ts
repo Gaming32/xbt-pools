@@ -40,11 +40,12 @@ export async function fetchOmegaPool(): Promise<PoolFetchResult> {
       poolStart: START_DATE,
       connectInfo: {
         poolHost: "omegapool.tech",
-        poolPort: statsResponse.pool.datum_port,
+        poolPortsByDifficulty: {
+          [statsResponse.pool.min_difficulty]: statsResponse.pool.datum_port,
+        },
         poolPubkey: statsResponse.pool.pubkey,
         requireV3: false,
       },
-      minDifficulty: statsResponse.pool.min_difficulty,
     };
   } catch (err) {
     return handleFetchError(INFO, err);

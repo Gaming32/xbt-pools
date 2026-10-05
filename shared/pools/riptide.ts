@@ -61,11 +61,14 @@ export async function fetchRiptide(): Promise<PoolFetchResult> {
       poolStart: START_DATE,
       connectInfo: {
         poolHost: infoResponse.join.pool_host,
-        poolPort: infoResponse.join.pool_port,
+        poolPortsByDifficulty: {
+          2048: infoResponse.join.pool_port,
+          4096: 29130,
+          32768: 29121,
+        },
         poolPubkey: infoResponse.join.pool_pubkey,
         requireV3: false,
       },
-      minDifficulty: 2048,
     };
   } catch (err) {
     return handleFetchError(INFO, err);

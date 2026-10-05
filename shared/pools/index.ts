@@ -1,6 +1,8 @@
 import { HS_PER_THS, type TimePeriod } from "../common";
+import { fetchB2Pool } from "./b2Pool";
 import { fetchBlockvase } from "./blockvase";
 import { fetchConvoy } from "./convoy";
+import { fetchLazarus } from "./lazarus";
 import { fetchOmegaPool } from "./omega-pool";
 import { fetchPaperclipPool } from "./paperclip-pool";
 import { fetchRiptide } from "./riptide";
@@ -26,11 +28,10 @@ export type BitcoinPool = {
   poolStart: number;
   connectInfo: {
     poolHost: string;
-    poolPort: number;
+    poolPortsByDifficulty: Record<number, number>;
     poolPubkey: string;
     requireV3: boolean;
   };
-  minDifficulty: number;
 };
 
 export type PoolFetchError = {
@@ -41,8 +42,10 @@ export type PoolFetchError = {
 export type PoolFetchResult = BitcoinPool | PoolFetchError;
 
 export const POOL_FETCHERS = {
+  b2pool: fetchB2Pool,
   blockvase: fetchBlockvase,
   convoy: fetchConvoy,
+  lazarus: fetchLazarus,
   omegaPool: fetchOmegaPool,
   paperclipPool: fetchPaperclipPool,
   riptide: fetchRiptide,

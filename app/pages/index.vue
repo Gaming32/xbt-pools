@@ -1,17 +1,24 @@
 <script setup lang="ts">
-import type { Comparator } from "#shared/common";
 import {
   poolRevenuePerDay,
   type BitcoinPool,
   type FetchedPools,
   type PoolFetchResult,
 } from "#shared/pools";
+import type { Comparator } from "#shared/util";
 import { formatMetric, queryUnionRef } from "~/util";
 
 const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
 const SORT_DIRECTIONS = ["Asc", "Dec"] as const;
 
-const { data: pools, refresh } = await useFetch<FetchedPools>("/api/pools");
+const {
+  data: pools,
+  refresh,
+  pending,
+} = await useFetch<FetchedPools>("/api/server-pools", {
+  server: false,
+  lazy: true,
+});
 
 const sortOption = queryUnionRef("sort", SORT_OPTIONS, "Revenue");
 const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "Dec");
@@ -78,9 +85,14 @@ const sortedPools = computed(() => {
         </option>
       </select>
       &thinsp;
-      <button @click="refresh()">Refresh</button>
+      <button @click="refresh()" class="refresh-button">
+        <Icon
+          name="i-lucide-refresh-cw"
+          :class="{ spinning: pools && pending }"
+        />
+      </button>
     </div>
-    <div>
+    <div v-if="pools">
       <ol>
         <li v-for="pool in sortedPools" :key="pool.info.name">
           <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a
@@ -97,11 +109,34 @@ const sortedPools = computed(() => {
         </li>
       </ol>
     </div>
+    <div v-else>Loading...</div>
   </div>
 </template>
 
 <style lang="css" scoped>
 .error {
   color: red;
+}
+
+.refresh-button {
+  vertical-align: middle;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  font-size: medium;
+  padding: 0;
+}
+
+.spinning {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
