@@ -13,14 +13,6 @@ import { formatMetric, queryUnionRef } from "~/util";
 const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
 const SORT_DIRECTIONS = ["Asc", "Dec"] as const;
 
-// const {
-//   data: pools,
-//   refresh,
-//   pending,
-// } = await useFetch<FetchedPools>("/api/server-pools", {
-//   server: false,
-//   lazy: true,
-// });
 const {
   data: pools,
   refresh,
