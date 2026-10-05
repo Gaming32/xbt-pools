@@ -6,6 +6,7 @@ import { fetchLazarus } from "./lazarus";
 import { fetchOmegaPool } from "./omega-pool";
 import { fetchPaperclipPool } from "./paperclip-pool";
 import { fetchRiptide } from "./riptide";
+import { fetchTerminusPool } from "./terminus-pool";
 
 export type DatumConnectInfo = {
   pool_host: string;
@@ -49,6 +50,7 @@ export const POOL_FETCHERS = {
   omegaPool: fetchOmegaPool,
   paperclipPool: fetchPaperclipPool,
   riptide: fetchRiptide,
+  terminusPool: fetchTerminusPool,
 };
 export type FetchedPools = Record<keyof typeof POOL_FETCHERS, PoolFetchResult>;
 
