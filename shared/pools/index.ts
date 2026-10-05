@@ -1,5 +1,4 @@
 import { HS_PER_THS, type TimePeriod } from "../common";
-import { typedRecord } from "../util";
 import { fetchB2Pool } from "./b2Pool";
 import { fetchBlockvase } from "./blockvase";
 import { fetchConvoy } from "./convoy";
@@ -44,18 +43,18 @@ export type PoolFetchError = {
 export type PoolFetchResult = BitcoinPool | PoolFetchError;
 
 export type PoolFetcher = () => Promise<PoolFetchResult>;
-export const CLIENT_POOL_FETCHERS = typedRecord<PoolFetcher>()({
+export const CLIENT_POOL_FETCHERS = {
   b2pool: fetchB2Pool,
   blockvase: fetchBlockvase,
   lazarus: fetchLazarus,
   terminusPool: fetchTerminusPool,
-});
-export const SERVER_POOL_FETCHERS = typedRecord<PoolFetcher>()({
+};
+export const SERVER_POOL_FETCHERS = {
   convoy: fetchConvoy,
   omegaPool: fetchOmegaPool,
   paperclipPool: fetchPaperclipPool,
   riptide: fetchRiptide,
-});
+};
 export type BitcoinPoolId =
   | keyof typeof CLIENT_POOL_FETCHERS
   | keyof typeof SERVER_POOL_FETCHERS;

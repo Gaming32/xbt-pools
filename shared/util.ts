@@ -27,12 +27,3 @@ export async function findBestPing(
   console.log("Finished pinging", urls, "found best", best);
   return best;
 }
-
-// https://stackoverflow.com/a/66326950
-export function typedRecord<TValue>() {
-  return function identityFunction<T extends Record<PropertyKey, TValue>>(
-    v: T,
-  ): T {
-    return v;
-  };
-}
