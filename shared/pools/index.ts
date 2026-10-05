@@ -1,4 +1,5 @@
 import { HS_PER_THS, type TimePeriod } from "../common";
+import { typedRecord } from "../util";
 import { fetchB2Pool } from "./b2Pool";
 import { fetchBlockvase } from "./blockvase";
 import { fetchConvoy } from "./convoy";
@@ -42,17 +43,36 @@ export type PoolFetchError = {
 
 export type PoolFetchResult = BitcoinPool | PoolFetchError;
 
-export const POOL_FETCHERS = {
+export type PoolFetcher = () => Promise<PoolFetchResult>;
+export const CLIENT_POOL_FETCHERS = typedRecord<PoolFetcher>()({
   b2pool: fetchB2Pool,
   blockvase: fetchBlockvase,
-  convoy: fetchConvoy,
   lazarus: fetchLazarus,
+  terminusPool: fetchTerminusPool,
+});
+export const SERVER_POOL_FETCHERS = typedRecord<PoolFetcher>()({
+  convoy: fetchConvoy,
   omegaPool: fetchOmegaPool,
   paperclipPool: fetchPaperclipPool,
   riptide: fetchRiptide,
-  terminusPool: fetchTerminusPool,
-};
-export type FetchedPools = Record<keyof typeof POOL_FETCHERS, PoolFetchResult>;
+});
+export type BitcoinPoolId =
+  | keyof typeof CLIENT_POOL_FETCHERS
+  | keyof typeof SERVER_POOL_FETCHERS;
+export type FetchedPools = Record<BitcoinPoolId, PoolFetchResult>;
+
+export async function fetchSomePools<Id extends BitcoinPoolId>(
+  fetchers: Record<Id, PoolFetcher>,
+): Promise<Record<Id, PoolFetchResult>> {
+  const fetcherEntries = Object.entries(fetchers) as [Id, PoolFetcher][];
+  return Object.fromEntries(
+    await Promise.all(
+      fetcherEntries.map(([name, fetcher]) =>
+        fetcher().then((fetched) => [name, fetched]),
+      ),
+    ),
+  );
+}
 
 export function poolRevenuePerDay(pool: BitcoinPool, hashrateHS = HS_PER_THS) {
   return 0; // TODO

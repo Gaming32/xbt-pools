@@ -29,9 +29,8 @@ type PoolResponse = {
 };
 
 const INFO = { name: "B2Pool", homepage: "https://b2pool.io/" };
-const START_DATE = /* @__PURE__ */ new Date("2026-09-06T24:49:06Z").getTime(); // Block height 968704
+const START_DATE = /* @__PURE__ */ new Date("2026-09-07T00:49:06Z").getTime(); // Block height 968704
 
-// TODO: Make this run on the client
 export async function fetchB2Pool(): Promise<PoolFetchResult> {
   try {
     const fetchPoolAndPing = async () => {

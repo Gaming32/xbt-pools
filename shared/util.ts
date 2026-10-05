@@ -30,3 +30,12 @@ export async function findBestPing(
     .filter((result) => result !== null)
     .reduce((a, b) => (b.ping < a.ping ? b : a));
 }
+
+// https://stackoverflow.com/a/66326950
+export function typedRecord<TValue>() {
+  return function identityFunction<T extends Record<PropertyKey, TValue>>(
+    v: T,
+  ): T {
+    return v;
+  };
+}

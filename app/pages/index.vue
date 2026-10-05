@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import {
+  CLIENT_POOL_FETCHERS,
+  fetchSomePools,
   poolRevenuePerDay,
   type BitcoinPool,
   type FetchedPools,
@@ -11,14 +13,28 @@ import { formatMetric, queryUnionRef } from "~/util";
 const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
 const SORT_DIRECTIONS = ["Asc", "Dec"] as const;
 
+// const {
+//   data: pools,
+//   refresh,
+//   pending,
+// } = await useFetch<FetchedPools>("/api/server-pools", {
+//   server: false,
+//   lazy: true,
+// });
 const {
   data: pools,
   refresh,
   pending,
-} = await useFetch<FetchedPools>("/api/server-pools", {
-  server: false,
-  lazy: true,
-});
+} = await useAsyncData<FetchedPools>(
+  async () => {
+    const [serverPools, clientPools] = await Promise.all([
+      $fetch("/api/server-pools"),
+      fetchSomePools(CLIENT_POOL_FETCHERS),
+    ]);
+    return { ...serverPools, ...clientPools };
+  },
+  { server: false, lazy: true },
+);
 
 const sortOption = queryUnionRef("sort", SORT_OPTIONS, "Revenue");
 const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "Dec");
