@@ -13,6 +13,7 @@ const {
   refresh,
   pending,
 } = await useAsyncData<FetchedPools>(fetchAllPools, {
+  server: false,
   lazy: true,
 });
 
