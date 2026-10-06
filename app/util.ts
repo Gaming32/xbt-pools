@@ -1,4 +1,10 @@
 import type { LocationQuery } from "vue-router";
+import {
+  CLIENT_POOL_FETCHERS,
+  fetchSomePools,
+  type BitcoinPool,
+} from "#shared/pools";
+import { HS_PER_THS, type TimePeriod } from "#shared/common";
 
 export function queryUnionRef<A extends readonly string[]>(
   key: string,
@@ -36,4 +42,12 @@ export function formatMetric(value: number, fractionDigits?: number) {
     value /= 1000;
   }
   return `${value.toLocaleString(undefined, { maximumFractionDigits: fractionDigits })} ${prefixes[prefixIndex]}`;
+}
+
+export async function fetchAllPools() {
+  const [serverPools, clientPools] = await Promise.all([
+    $fetch("/api/server-pools"),
+    fetchSomePools(CLIENT_POOL_FETCHERS),
+  ]);
+  return { ...serverPools, ...clientPools };
 }

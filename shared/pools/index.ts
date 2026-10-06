@@ -72,7 +72,3 @@ export async function fetchSomePools<Id extends BitcoinPoolId>(
     ),
   );
 }
-
-export function poolRevenuePerDay(pool: BitcoinPool, hashrateHS = HS_PER_THS) {
-  return 0; // TODO
-}

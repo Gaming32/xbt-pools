@@ -7,3 +7,8 @@ export const HS_PER_GHS = 1_000_000_000;
 export const HS_PER_THS = 1_000_000_000_000;
 
 export const MULTIPLE_PER_BPS = 100_000;
+
+export const SATS_PER_BTC = 100_000_000;
+
+export const BITCOIN_UNITS = ["Bitcoin", "Satoshis"] as const;
+export type BitcoinUnit = (typeof BITCOIN_UNITS)[number];

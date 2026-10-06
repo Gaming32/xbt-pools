@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import {
-  CLIENT_POOL_FETCHERS,
-  fetchSomePools,
-  poolRevenuePerDay,
-  type BitcoinPool,
-  type FetchedPools,
-  type PoolFetchResult,
-} from "#shared/pools";
+import type { BitcoinPool, FetchedPools, PoolFetchResult } from "#shared/pools";
 import type { Comparator } from "#shared/util";
-import { formatMetric, queryUnionRef } from "~/util";
+import { poolRevenuePerDay } from "~/revenue";
+import { fetchAllPools, formatMetric, queryUnionRef } from "~/util";
 
+const BITCOIN_UNITS = ["Bitcoin", "Satoshis"] as const;
 const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
 const SORT_DIRECTIONS = ["Asc", "Dec"] as const;
 
@@ -17,17 +12,14 @@ const {
   data: pools,
   refresh,
   pending,
-} = await useAsyncData<FetchedPools>(
-  async () => {
-    const [serverPools, clientPools] = await Promise.all([
-      $fetch("/api/server-pools"),
-      fetchSomePools(CLIENT_POOL_FETCHERS),
-    ]);
-    return { ...serverPools, ...clientPools };
-  },
-  { server: false, lazy: true },
-);
+} = await useAsyncData<FetchedPools>(fetchAllPools, {
+  lazy: true,
+});
 
+const units = useState<(typeof BITCOIN_UNITS)[number]>(
+  "units",
+  () => "Bitcoin",
+);
 const sortOption = queryUnionRef("sort", SORT_OPTIONS, "Revenue");
 const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "Dec");
 
@@ -81,17 +73,12 @@ const sortedPools = computed(() => {
 <template>
   <div>
     <div>
-      <select v-model="sortOption">
-        <option v-for="option in SORT_OPTIONS" :key="option">
-          {{ option }}
-        </option>
-      </select>
+      <SimpleSelect v-model="units" :options="BITCOIN_UNITS" />
+    </div>
+    <div>
+      <SimpleSelect v-model="sortOption" :options="SORT_OPTIONS" />
       &thinsp;
-      <select v-model="sortDirection">
-        <option v-for="direction in SORT_DIRECTIONS" :key="direction">
-          {{ direction }}
-        </option>
-      </select>
+      <SimpleSelect v-model="sortDirection" :options="SORT_DIRECTIONS" />
       &thinsp;
       <button @click="refresh()" class="refresh-button">
         <Icon
@@ -100,22 +87,19 @@ const sortedPools = computed(() => {
         />
       </button>
     </div>
-    <div v-if="pools">
-      <ol>
-        <li v-for="pool in sortedPools" :key="pool.info.name">
-          <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a
-          >:
-          <span
-            v-if="!('fetchError' in pool)"
-            :title="`${pool.hashrateHS.toLocaleString()} H/s`"
-          >
+    <div v-if="pools" class="pool-table">
+      <div v-for="pool in sortedPools" :key="pool.info.name" class="pool-row">
+        <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a>
+        <br />
+        <template v-if="'fetchError' in pool">{{ pool.fetchError }}</template>
+        <template v-else>
+          <span :title="`${pool.hashrateHS.toLocaleString()} H/s`">
             {{ formatMetric(pool.hashrateHS, 2) }}H/s
           </span>
-          <span v-else class="error">
-            {{ pool.fetchError }}
-          </span>
-        </li>
-      </ol>
+          <br />
+          <BitcoinAmount :sats="poolRevenuePerDay(pool)" :unit="units" />/TH/day
+        </template>
+      </div>
     </div>
     <div v-else>Loading...</div>
   </div>
@@ -124,6 +108,20 @@ const sortedPools = computed(() => {
 <style lang="css" scoped>
 .error {
   color: red;
+}
+
+.pool-table {
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: max-content;
+  row-gap: 1rem;
+
+  .pool-row {
+    display: inline-block;
+    padding: 1rem;
+    border: 3px solid orange;
+    border-radius: 10px;
+  }
 }
 
 .refresh-button {
