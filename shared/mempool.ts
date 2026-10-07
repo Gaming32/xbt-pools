@@ -1,6 +1,6 @@
 import type { TimePeriod } from "./common";
 
-export type BlockTipHeightResponse = number;
+export type BlockTipHeightResponse = string;
 
 export type MiningPoolResponse = {
   pool: {
@@ -17,13 +17,10 @@ export type MiningPoolResponse = {
   reportedHashrate: null;
 };
 
-export type MempoolBlocksFeesResponse = Array<{
-  blockSize: number;
-  blockVSize: number;
-  nTx: number;
-  totalFees: number;
-  medianFee: number;
-  feeRange: number[];
+export type BlockFeesResponse = Array<{
+  avgHeight: number;
+  timestamp: number;
+  avgFees: number;
 }>;
 
 export function fetchBlockTipHeight(): Promise<BlockTipHeightResponse> {
@@ -34,8 +31,10 @@ export function fetchMiningPool(slug: string): Promise<MiningPoolResponse> {
   return fetchMempool(`v1/mining/pool/${slug}`);
 }
 
-export function fetchMempoolBlocksFees(): Promise<MempoolBlocksFeesResponse> {
-  return fetchMempool("v1/fees/mempool-blocks");
+export function fetchBlockFees(
+  timePeriod: "24h" | "3d" | "1w" | "1m" | "3m" | "6m" | "1y" | "2y" | "3y",
+): Promise<BlockFeesResponse> {
+  return fetchMempool(`v1/mining/blocks/fees/${timePeriod}`);
 }
 
 function fetchMempool<T>(route: string): Promise<T> {

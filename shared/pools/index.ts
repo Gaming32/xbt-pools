@@ -42,23 +42,29 @@ export type PoolFetchError = {
 
 export type PoolFetchResult = BitcoinPool | PoolFetchError;
 
-export type PoolFetcher = () => Promise<PoolFetchResult>;
-export const CLIENT_POOL_FETCHERS = {
-  b2pool: fetchB2Pool,
-  blockvase: fetchBlockvase,
-  lazarus: fetchLazarus,
-  terminusPool: fetchTerminusPool,
-};
 export const SERVER_POOL_FETCHERS = {
   convoy: fetchConvoy,
   omegaPool: fetchOmegaPool,
   paperclipPool: fetchPaperclipPool,
   riptide: fetchRiptide,
 };
+export const CLIENT_POOL_FETCHERS = {
+  b2pool: fetchB2Pool,
+  blockvase: fetchBlockvase,
+  lazarus: fetchLazarus,
+  terminusPool: fetchTerminusPool,
+};
+
+export type PoolFetcher = () => Promise<PoolFetchResult>;
 export type BitcoinPoolId =
-  | keyof typeof CLIENT_POOL_FETCHERS
-  | keyof typeof SERVER_POOL_FETCHERS;
+  | keyof typeof SERVER_POOL_FETCHERS
+  | keyof typeof CLIENT_POOL_FETCHERS;
 export type FetchedPools = Record<BitcoinPoolId, PoolFetchResult>;
+
+export const BITCOIN_POOL_IDS = [
+  ...Object.keys(SERVER_POOL_FETCHERS),
+  ...Object.keys(CLIENT_POOL_FETCHERS),
+] as BitcoinPoolId[];
 
 export async function fetchSomePools<Id extends BitcoinPoolId>(
   fetchers: Record<Id, PoolFetcher>,

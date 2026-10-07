@@ -1,4 +1,4 @@
-import { SATS_PER_BTC, type BitcoinUnit } from "#shared/common";
+import { COIN, type BitcoinUnit } from "#shared/common";
 import type { PropType } from "vue";
 
 const BTC_FORMAT_OPTIONS = {
@@ -22,7 +22,7 @@ export default defineComponent({
     return () => {
       switch (props.unit) {
         case "Bitcoin":
-          return `₿${(props.sats / SATS_PER_BTC).toLocaleString(undefined, BTC_FORMAT_OPTIONS)}`;
+          return `₿${(props.sats / COIN).toLocaleString(undefined, BTC_FORMAT_OPTIONS)}`;
         case "Satoshis":
           return (
             <span>

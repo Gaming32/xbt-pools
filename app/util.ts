@@ -1,10 +1,10 @@
-import type { LocationQuery } from "vue-router";
 import {
-  CLIENT_POOL_FETCHERS,
-  fetchSomePools,
-  type BitcoinPool,
-} from "#shared/pools";
-import { HS_PER_THS, type TimePeriod } from "#shared/common";
+  fetchBlockFees,
+  fetchBlockTipHeight,
+  type BlockFeesResponse,
+} from "#shared/mempool";
+import { CLIENT_POOL_FETCHERS, fetchSomePools } from "#shared/pools";
+import type { LocationQuery } from "vue-router";
 
 export function queryUnionRef<A extends readonly string[]>(
   key: string,
@@ -44,10 +44,27 @@ export function formatMetric(value: number, fractionDigits?: number) {
   return `${value.toLocaleString(undefined, { maximumFractionDigits: fractionDigits })} ${prefixes[prefixIndex]}`;
 }
 
-export async function fetchAllPools() {
-  const [serverPools, clientPools] = await Promise.all([
+export async function fetchAllData() {
+  async function fetchAllBlockFees<
+    A extends readonly Parameters<typeof fetchBlockFees>[0][],
+  >(periods: A): Promise<Record<A[number], BlockFeesResponse>> {
+    const entries = await Promise.all(
+      periods.map((period) =>
+        fetchBlockFees(period).then((fees) => [period, fees]),
+      ),
+    );
+    return Object.fromEntries(entries);
+  }
+
+  const [serverPools, clientPools, tipHeight, blockFees] = await Promise.all([
     $fetch("/api/server-pools"),
     fetchSomePools(CLIENT_POOL_FETCHERS),
+    fetchBlockTipHeight(),
+    fetchAllBlockFees(["24h", "1w", "3y"]),
   ]);
-  return { ...serverPools, ...clientPools };
+  return {
+    pools: { ...serverPools, ...clientPools },
+    nextBlockHeight: +tipHeight + 1,
+    blockFees,
+  };
 }

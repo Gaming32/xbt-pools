@@ -1,22 +1,30 @@
 <script setup lang="ts">
-import type { BitcoinPool, FetchedPools, PoolFetchResult } from "#shared/pools";
+import {
+  BITCOIN_POOL_IDS,
+  type BitcoinPool,
+  type BitcoinPoolId,
+  type FetchedPools,
+  type PoolFetchResult,
+} from "#shared/pools";
 import type { Comparator } from "#shared/util";
 import { poolRevenuePerDay } from "~/revenue";
-import { fetchAllPools, formatMetric, queryUnionRef } from "~/util";
+import { fetchAllData, formatMetric, queryUnionRef } from "~/util";
+import { HS_PER_THS, TIME_PERIODS, type TimePeriod } from "~~/shared/common";
 
 const BITCOIN_UNITS = ["Bitcoin", "Satoshis"] as const;
 const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
 const SORT_DIRECTIONS = ["Asc", "Dec"] as const;
 
-const {
-  data: pools,
-  refresh,
-  pending,
-} = await useAsyncData<FetchedPools>(fetchAllPools, {
-  server: false,
-  lazy: true,
-});
+const { data, refresh, pending } = await useAsyncData(
+  "homeData",
+  fetchAllData,
+  {
+    server: false,
+    lazy: true,
+  },
+);
 
+const averagingPeriod = useState<TimePeriod>("timePeriod", () => "1w");
 const units = useState<(typeof BITCOIN_UNITS)[number]>(
   "units",
   () => "Bitcoin",
@@ -25,8 +33,8 @@ const sortOption = queryUnionRef("sort", SORT_OPTIONS, "Revenue");
 const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "Dec");
 
 const sortedPools = computed(() => {
-  if (pools.value === undefined) {
-    return undefined;
+  if (data.value === undefined) {
+    return [];
   }
 
   let baseComparator: Comparator<BitcoinPool>;
@@ -67,7 +75,45 @@ const sortedPools = computed(() => {
     return directionComparator(a, b);
   };
 
-  return Object.values(pools.value).sort(comparator);
+  return Object.entries(data.value.pools)
+    .map(([id, pool]) => ({ id: id as BitcoinPoolId, ...pool }))
+    .sort(comparator);
+});
+
+const poolRevenue = computed(() => {
+  if (data.value === undefined) {
+    return {};
+  }
+
+  const FEE_PERIOD_MAPPING: Record<
+    TimePeriod,
+    keyof Awaited<ReturnType<typeof fetchAllData>>["blockFees"]
+  > = {
+    "24h": "24h",
+    "1w": "1w",
+    all: "3y",
+  };
+  const blockFees =
+    data.value.blockFees[FEE_PERIOD_MAPPING[averagingPeriod.value]];
+  const averageBlockFee = blockFees.reduce(
+    (sum, fees) => sum + fees.avgFees / blockFees.length,
+    0,
+  );
+
+  const result: Partial<Record<BitcoinPoolId, number>> = {};
+  for (const poolId of BITCOIN_POOL_IDS) {
+    const pool = data.value.pools[poolId];
+    if ("fetchError" in pool) {
+      continue;
+    }
+    result[poolId] = poolRevenuePerDay(pool, {
+      nextBlockHeight: data.value.nextBlockHeight,
+      luckPeriod: averagingPeriod.value,
+      hashrateHS: HS_PER_THS,
+      blockFee: averageBlockFee,
+    });
+  }
+  return result;
 });
 </script>
 
@@ -84,11 +130,11 @@ const sortedPools = computed(() => {
       <button @click="refresh()" class="refresh-button">
         <Icon
           name="i-lucide-refresh-cw"
-          :class="{ spinning: pools && pending }"
+          :class="{ spinning: data && pending }"
         />
       </button>
     </div>
-    <div v-if="pools" class="pool-table">
+    <div v-if="data" class="pool-table">
       <div v-for="pool in sortedPools" :key="pool.info.name" class="pool-row">
         <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a>
         <br />
@@ -98,7 +144,7 @@ const sortedPools = computed(() => {
             {{ formatMetric(pool.hashrateHS, 2) }}H/s
           </span>
           <br />
-          <BitcoinAmount :sats="poolRevenuePerDay(pool)" :unit="units" />/TH/day
+          <BitcoinAmount :sats="poolRevenue[pool.id]!" :unit="units" />/TH/day
         </template>
       </div>
     </div>
