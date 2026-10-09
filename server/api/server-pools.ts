@@ -1,3 +1,3 @@
-import { fetchSomePools, SERVER_POOL_FETCHERS } from "#shared/pools";
+import { fetchServerPoolsCached } from "../utils/pool-fetch";
 
-export default defineEventHandler(() => fetchSomePools(SERVER_POOL_FETCHERS));
+export default defineEventHandler(() => fetchServerPoolsCached());

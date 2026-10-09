@@ -3,25 +3,21 @@ import {
   BITCOIN_POOL_IDS,
   type BitcoinPool,
   type BitcoinPoolId,
-  type FetchedPools,
   type PoolFetchResult,
 } from "#shared/pools";
 import type { Comparator } from "#shared/util";
 import { poolRevenuePerDay } from "~/revenue";
 import { fetchAllData, formatMetric, queryUnionRef } from "~/util";
-import { HS_PER_THS, TIME_PERIODS, type TimePeriod } from "~~/shared/common";
+import { HS_PER_THS, type TimePeriod } from "~~/shared/common";
 
 const BITCOIN_UNITS = ["Bitcoin", "Satoshis"] as const;
 const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
 const SORT_DIRECTIONS = ["Asc", "Dec"] as const;
 
-const { data, refresh, pending } = await useAsyncData(
+const { data, refresh, pending } = await useLazyAsyncData(
   "homeData",
   fetchAllData,
-  {
-    server: false,
-    lazy: true,
-  },
+  { server: false },
 );
 
 const averagingPeriod = useState<TimePeriod>("timePeriod", () => "1w");
