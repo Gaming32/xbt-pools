@@ -57,8 +57,7 @@ export const CLIENT_POOL_FETCHERS = {
 
 export type PoolFetcher = () => Promise<PoolFetchResult>;
 export type BitcoinPoolId =
-  | keyof typeof SERVER_POOL_FETCHERS
-  | keyof typeof CLIENT_POOL_FETCHERS;
+  keyof typeof SERVER_POOL_FETCHERS | keyof typeof CLIENT_POOL_FETCHERS;
 export type FetchedPools = Record<BitcoinPoolId, PoolFetchResult>;
 
 export const BITCOIN_POOL_IDS = [

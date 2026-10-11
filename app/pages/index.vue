@@ -117,29 +117,50 @@ const poolRevenue = computed(() => {
 <template>
   <div>
     <div>
-      <SimpleSelect v-model="units" :options="BITCOIN_UNITS" lang-key="bitcoinUnits" />
+      <SimpleSelect
+        v-model="units"
+        :options="BITCOIN_UNITS"
+        lang-key="bitcoinUnits"
+      />
       &thinsp;
-      <SimpleSelect v-model="averagingPeriod" :options="TIME_PERIODS" lang-key="timePeriods" />
+      <SimpleSelect
+        v-model="averagingPeriod"
+        :options="TIME_PERIODS"
+        lang-key="timePeriods"
+      />
     </div>
     <div>
-      <SimpleSelect v-model="sortOption" :options="SORT_OPTIONS" lang-key="sort.option" />
+      <SimpleSelect
+        v-model="sortOption"
+        :options="SORT_OPTIONS"
+        lang-key="sort.option"
+      />
       &thinsp;
-      <SimpleSelect v-model="sortDirection" :options="SORT_DIRECTIONS" lang-key="sort.direction" />
+      <SimpleSelect
+        v-model="sortDirection"
+        :options="SORT_DIRECTIONS"
+        lang-key="sort.direction"
+      />
       &thinsp;
       <button class="refresh-button" @click="refresh()">
-        <Icon name="i-lucide-refresh-cw" :class="{ spinning: data && pending }" />
+        <Icon
+          name="i-lucide-refresh-cw"
+          :class="{ spinning: data && pending }"
+        />
       </button>
     </div>
     <div v-if="data" class="pool-table">
       <div v-for="pool in sortedPools" :key="pool.info.name" class="pool-row">
         <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a>
-        <br>
-        <template v-if="'fetchError' in pool">{{ formatServerError(pool.fetchError) }}</template>
+        <br />
+        <template v-if="'fetchError' in pool">{{
+          formatServerError(pool.fetchError)
+        }}</template>
         <template v-else>
           <span :title="`${$n(pool.hashrateHS)} H/s`">
             {{ formatMetric(pool.hashrateHS, 2) }}H/s
           </span>
-          <br>
+          <br />
           <BitcoinAmount :sats="poolRevenue[pool.id]!" :unit="units" />/TH/{{
             $t("perDay")
           }}
