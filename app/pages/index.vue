@@ -128,6 +128,10 @@ const poolRevenue = computed(() => {
         :options="TIME_PERIODS"
         lang-key="timePeriods"
       />
+      &thinsp;
+      <span v-if="averagingPeriod === 'all'" class="warning">{{
+        $t("allTimeWarning")
+      }}</span>
     </div>
     <div>
       <SimpleSelect
@@ -174,6 +178,10 @@ const poolRevenue = computed(() => {
 <style lang="css" scoped>
 .error {
   color: red;
+}
+
+.warning {
+  color: orange;
 }
 
 .pool-table {

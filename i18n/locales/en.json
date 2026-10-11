@@ -19,6 +19,7 @@
       "desc": "Desc"
     }
   },
+  "allTimeWarning": "When using the \"@:{'timePeriods.all'}\" averaging period, block fees will instead be averaged over the last 3 years (mempool.guide limitation)",
   "loading": "Loading...",
   "perDay": "day",
   "serverError": {
