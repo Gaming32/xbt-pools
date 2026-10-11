@@ -1,7 +1,7 @@
-<script setup lang="ts">
-const model = defineModel();
+<script setup lang="ts" generic="A extends readonly string[]">
+const model = defineModel<A[number]>();
 defineProps<{
-  options: readonly string[];
+  options: A;
 }>();
 </script>
 

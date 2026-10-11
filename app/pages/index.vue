@@ -8,7 +8,7 @@ import {
 import type { Comparator } from "#shared/util";
 import { poolRevenuePerDay } from "~/revenue";
 import { fetchAllData, formatMetric, queryUnionRef } from "~/util";
-import { HS_PER_THS, type TimePeriod } from "~~/shared/common";
+import { HS_PER_THS, TIME_PERIODS, type TimePeriod } from "~~/shared/common";
 
 const BITCOIN_UNITS = ["Bitcoin", "Satoshis"] as const;
 const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
@@ -117,6 +117,8 @@ const poolRevenue = computed(() => {
   <div>
     <div>
       <SimpleSelect v-model="units" :options="BITCOIN_UNITS" />
+      &thinsp;
+      <SimpleSelect v-model="averagingPeriod" :options="TIME_PERIODS" />
     </div>
     <div>
       <SimpleSelect v-model="sortOption" :options="SORT_OPTIONS" />
