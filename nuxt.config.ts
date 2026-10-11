@@ -14,10 +14,19 @@ export default defineNuxtConfig({
     experimental: {
       typedOptionsAndMessages: "default",
     },
-    locales: [{ code: "en", name: "English", file: "en.json" }],
+    locales: [
+      { code: "en", name: "English", language: "en-US", file: "en.json" },
+      { code: "zh", name: "中文", language: "zh-CN", file: "zh.json" },
+    ],
   },
 
-  modules: ["@nuxt/eslint", "@nuxt/icon", "@nuxt/scripts", "@nuxtjs/i18n"],
+  modules: [
+    "@nuxt/eslint",
+    "@nuxt/icon",
+    "@nuxt/scripts",
+    "@nuxtjs/i18n",
+    "vuetify-nuxt-module",
+  ],
 
   typescript: {
     sharedTsConfig: {

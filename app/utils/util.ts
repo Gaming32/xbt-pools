@@ -89,5 +89,5 @@ export async function fetchAllData() {
 
 export function formatServerError(error: ServerError) {
   const { t } = useI18n();
-  return t(`error.${error.key}`, error.params);
+  return t(`serverError.${error.key}`, error.params);
 }

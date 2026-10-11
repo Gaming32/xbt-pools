@@ -10,18 +10,18 @@
   },
   "sort": {
     "option": {
-      "alphabetic": "Alphabetic",
+      "name": "Name",
       "revenue": "Revenue",
       "hashrate": "Hashrate"
     },
     "direction": {
       "asc": "Asc",
-      "dec": "Dec"
+      "desc": "Desc"
     }
   },
   "loading": "Loading...",
   "perDay": "day",
-  "error": {
+  "serverError": {
     "statusCode": "Status code {0}",
     "generalFetch": "Failed to fetch: {0}"
   }

@@ -15,8 +15,8 @@ import {
 import type { Comparator } from "#shared/util";
 import { poolRevenuePerDay } from "~/revenue";
 
-const SORT_OPTIONS = ["alphabetic", "revenue", "hashrate"] as const;
-const SORT_DIRECTIONS = ["asc", "dec"] as const;
+const SORT_OPTIONS = ["name", "revenue", "hashrate"] as const;
+const SORT_DIRECTIONS = ["asc", "desc"] as const;
 
 const { data, refresh, pending } = await useLazyAsyncData(
   "homeData",
@@ -27,7 +27,7 @@ const { data, refresh, pending } = await useLazyAsyncData(
 const averagingPeriod = useState<TimePeriod>("timePeriod", () => "1w");
 const units = useState<BitcoinUnit>("units", () => "btc");
 const sortOption = queryUnionRef("sort", SORT_OPTIONS, "revenue");
-const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "dec");
+const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "desc");
 
 const sortedPools = computed(() => {
   if (data.value === undefined) {
@@ -36,7 +36,7 @@ const sortedPools = computed(() => {
 
   let baseComparator: Comparator<BitcoinPool>;
   switch (sortOption.value) {
-    case "alphabetic":
+    case "name":
       baseComparator = (a, b) => a.info.name.localeCompare(b.info.name);
       break;
     case "hashrate":
@@ -52,7 +52,7 @@ const sortedPools = computed(() => {
     case "asc":
       directionComparator = baseComparator;
       break;
-    case "dec":
+    case "desc":
       directionComparator = (a, b) => baseComparator(b, a);
       break;
   }
@@ -134,9 +134,7 @@ const poolRevenue = computed(() => {
       <div v-for="pool in sortedPools" :key="pool.info.name" class="pool-row">
         <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a>
         <br>
-        <template v-if="'fetchError' in pool">{{
-          formatServerError(pool.fetchError)
-        }}</template>
+        <template v-if="'fetchError' in pool">{{ formatServerError(pool.fetchError) }}</template>
         <template v-else>
           <span :title="`${$n(pool.hashrateHS)} H/s`">
             {{ formatMetric(pool.hashrateHS, 2) }}H/s

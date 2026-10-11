@@ -1,0 +1,28 @@
+{
+  "bitcoinUnits": {
+    "btc": "比特币",
+    "sat": "聪"
+  },
+  "timePeriods": {
+    "24h": "24小时",
+    "1w": "1周",
+    "all": "历史至今"
+  },
+  "sort": {
+    "option": {
+      "name": "名称",
+      "revenue": "收益",
+      "hashrate": "算力"
+    },
+    "direction": {
+      "asc": "升序",
+      "desc": "降序"
+    }
+  },
+  "loading": "加载中...",
+  "perDay": "天",
+  "serverError": {
+    "statusCode": "状态码：{0}",
+    "generalFetch": "获取数据失败：{0}"
+  }
+}

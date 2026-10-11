@@ -17,6 +17,6 @@ export const BITCOIN_UNITS = ["btc", "sat"] as const;
 export type BitcoinUnit = (typeof BITCOIN_UNITS)[number];
 
 export type ServerError = {
-  key: JsonPaths<DefaultLocaleMessageSchema["error"]>;
+  key: JsonPaths<DefaultLocaleMessageSchema["serverError"]>;
   params: string[];
 };
