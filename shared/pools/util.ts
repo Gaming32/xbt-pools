@@ -11,8 +11,18 @@ export function handleFetchError(
     info,
     fetchError:
       error instanceof FetchError
-        ? `Status code ${error.response?.status}`
-        : `Failed to fetch: ${error instanceof Error ? error.cause || error.message : error}`,
+        ? {
+            key: "statusCode",
+            params: [String(error.response?.status)],
+          }
+        : {
+            key: "generalFetch",
+            params: [
+              String(
+                error instanceof Error ? error.cause || error.message : error,
+              ),
+            ],
+          },
   };
 }
 

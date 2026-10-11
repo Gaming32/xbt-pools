@@ -1,0 +1,28 @@
+{
+  "bitcoinUnits": {
+    "btc": "Bitcoin",
+    "sat": "Satoshis"
+  },
+  "timePeriods": {
+    "24h": "24 hours",
+    "1w": "1 week",
+    "all": "All time"
+  },
+  "sort": {
+    "option": {
+      "alphabetic": "Alphabetic",
+      "revenue": "Revenue",
+      "hashrate": "Hashrate"
+    },
+    "direction": {
+      "asc": "Asc",
+      "dec": "Dec"
+    }
+  },
+  "loading": "Loading...",
+  "perDay": "day",
+  "error": {
+    "statusCode": "Status code {0}",
+    "generalFetch": "Failed to fetch: {0}"
+  }
+}

@@ -4,7 +4,23 @@ import {
   type BlockFeesResponse,
 } from "#shared/mempool";
 import { CLIENT_POOL_FETCHERS, fetchSomePools } from "#shared/pools";
+import type { DefaultLocaleMessageSchema } from "vue-i18n";
 import type { LocationQuery } from "vue-router";
+import type { ServerError } from "~~/shared/common";
+
+export type FlatJsonObjectPaths<
+  T,
+  RequiredFields extends string = string,
+  Key extends keyof T = keyof T,
+> = Key extends string
+  ? T[Key] extends Record<RequiredFields, string>
+    ? `${Key}`
+    : T[Key] extends Record<string, any>
+      ? `${Key}.${FlatJsonObjectPaths<T[Key], RequiredFields>}`
+      : never
+  : never;
+export type TranslationJsonObjects<RequiredFields extends string = string> =
+  FlatJsonObjectPaths<DefaultLocaleMessageSchema, RequiredFields>;
 
 export function queryUnionRef<A extends readonly string[]>(
   key: string,
@@ -34,14 +50,15 @@ export function queryParamToUnion<A extends readonly string[]>(
   return fallback;
 }
 
+const METRIC_PREFIXES = ["", "K", "M", "G", "T", "P", "E", "Z", "Y", "R", "Q"];
 export function formatMetric(value: number, fractionDigits?: number) {
-  const prefixes = ["", "K", "M", "G", "T", "P", "E", "Z", "Y", "R", "Q"];
+  const { n } = useI18n();
   let prefixIndex = 0;
-  while (prefixIndex < prefixes.length - 1 && value >= 2000) {
+  while (prefixIndex < METRIC_PREFIXES.length - 1 && value >= 2000) {
     prefixIndex++;
     value /= 1000;
   }
-  return `${value.toLocaleString(undefined, { maximumFractionDigits: fractionDigits })} ${prefixes[prefixIndex]}`;
+  return `${n(value, { maximumFractionDigits: fractionDigits })} ${METRIC_PREFIXES[prefixIndex]}`;
 }
 
 export async function fetchAllData() {
@@ -67,4 +84,9 @@ export async function fetchAllData() {
     nextBlockHeight: +tipHeight + 1,
     blockFees,
   };
+}
+
+export function formatServerError(error: ServerError) {
+  const { t } = useI18n();
+  return t(`error.${error.key}`, error.params);
 }

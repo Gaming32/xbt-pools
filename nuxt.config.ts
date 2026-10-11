@@ -9,5 +9,24 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxt/eslint", "@nuxt/icon", "@nuxt/scripts"],
+  i18n: {
+    defaultLocale: "en",
+    experimental: {
+      typedOptionsAndMessages: "default",
+    },
+    locales: [{ code: "en", name: "English", file: "en.json" }],
+  },
+
+  modules: ["@nuxt/eslint", "@nuxt/icon", "@nuxt/scripts", "@nuxtjs/i18n"],
+
+  typescript: {
+    sharedTsConfig: {
+      compilerOptions: {
+        paths: {
+          "#i18n": ["../.nuxt/types/i18n-messages.d.ts"],
+        },
+      },
+      include: ["**/*", "../.nuxt/types/i18n-messages.d.ts"],
+    },
+  },
 });

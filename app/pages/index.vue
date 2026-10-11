@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import {
+  BITCOIN_UNITS,
+  HS_PER_THS,
+  TIME_PERIODS,
+  type BitcoinUnit,
+  type TimePeriod,
+} from "#shared/common";
+import {
   BITCOIN_POOL_IDS,
   type BitcoinPool,
   type BitcoinPoolId,
@@ -7,12 +14,9 @@ import {
 } from "#shared/pools";
 import type { Comparator } from "#shared/util";
 import { poolRevenuePerDay } from "~/revenue";
-import { fetchAllData, formatMetric, queryUnionRef } from "~/util";
-import { HS_PER_THS, TIME_PERIODS, type TimePeriod } from "~~/shared/common";
 
-const BITCOIN_UNITS = ["Bitcoin", "Satoshis"] as const;
-const SORT_OPTIONS = ["Alphabetic", "Revenue", "Hashrate"] as const;
-const SORT_DIRECTIONS = ["Asc", "Dec"] as const;
+const SORT_OPTIONS = ["alphabetic", "revenue", "hashrate"] as const;
+const SORT_DIRECTIONS = ["asc", "dec"] as const;
 
 const { data, refresh, pending } = await useLazyAsyncData(
   "homeData",
@@ -21,12 +25,9 @@ const { data, refresh, pending } = await useLazyAsyncData(
 );
 
 const averagingPeriod = useState<TimePeriod>("timePeriod", () => "1w");
-const units = useState<(typeof BITCOIN_UNITS)[number]>(
-  "units",
-  () => "Bitcoin",
-);
-const sortOption = queryUnionRef("sort", SORT_OPTIONS, "Revenue");
-const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "Dec");
+const units = useState<BitcoinUnit>("units", () => "btc");
+const sortOption = queryUnionRef("sort", SORT_OPTIONS, "revenue");
+const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "dec");
 
 const sortedPools = computed(() => {
   if (data.value === undefined) {
@@ -35,23 +36,23 @@ const sortedPools = computed(() => {
 
   let baseComparator: Comparator<BitcoinPool>;
   switch (sortOption.value) {
-    case "Alphabetic":
+    case "alphabetic":
       baseComparator = (a, b) => a.info.name.localeCompare(b.info.name);
       break;
-    case "Hashrate":
+    case "hashrate":
       baseComparator = (a, b) => a.hashrateHS - b.hashrateHS;
       break;
-    case "Revenue":
+    case "revenue":
       baseComparator = (a, b) => poolRevenuePerDay(a) - poolRevenuePerDay(b);
       break;
   }
 
   let directionComparator: Comparator<BitcoinPool>;
   switch (sortDirection.value) {
-    case "Asc":
+    case "asc":
       directionComparator = baseComparator;
       break;
-    case "Dec":
+    case "dec":
       directionComparator = (a, b) => baseComparator(b, a);
       break;
   }
@@ -116,14 +117,30 @@ const poolRevenue = computed(() => {
 <template>
   <div>
     <div>
-      <SimpleSelect v-model="units" :options="BITCOIN_UNITS" />
+      <SimpleSelect
+        v-model="units"
+        :options="BITCOIN_UNITS"
+        lang-key="bitcoinUnits"
+      />
       &thinsp;
-      <SimpleSelect v-model="averagingPeriod" :options="TIME_PERIODS" />
+      <SimpleSelect
+        v-model="averagingPeriod"
+        :options="TIME_PERIODS"
+        lang-key="timePeriods"
+      />
     </div>
     <div>
-      <SimpleSelect v-model="sortOption" :options="SORT_OPTIONS" />
+      <SimpleSelect
+        v-model="sortOption"
+        :options="SORT_OPTIONS"
+        lang-key="sort.option"
+      />
       &thinsp;
-      <SimpleSelect v-model="sortDirection" :options="SORT_DIRECTIONS" />
+      <SimpleSelect
+        v-model="sortDirection"
+        :options="SORT_DIRECTIONS"
+        lang-key="sort.direction"
+      />
       &thinsp;
       <button @click="refresh()" class="refresh-button">
         <Icon
@@ -136,17 +153,21 @@ const poolRevenue = computed(() => {
       <div v-for="pool in sortedPools" :key="pool.info.name" class="pool-row">
         <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a>
         <br />
-        <template v-if="'fetchError' in pool">{{ pool.fetchError }}</template>
+        <template v-if="'fetchError' in pool">{{
+          formatServerError(pool.fetchError)
+        }}</template>
         <template v-else>
-          <span :title="`${pool.hashrateHS.toLocaleString()} H/s`">
+          <span :title="`${$n(pool.hashrateHS)} H/s`">
             {{ formatMetric(pool.hashrateHS, 2) }}H/s
           </span>
           <br />
-          <BitcoinAmount :sats="poolRevenue[pool.id]!" :unit="units" />/TH/day
+          <BitcoinAmount :sats="poolRevenue[pool.id]!" :unit="units" />/TH/{{
+            $t("perDay")
+          }}
         </template>
       </div>
     </div>
-    <div v-else>Loading...</div>
+    <div v-else>{{ $t("loading") }}</div>
   </div>
 </template>
 

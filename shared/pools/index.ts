@@ -1,4 +1,4 @@
-import { HS_PER_THS, type TimePeriod } from "../common";
+import type { ServerError, TimePeriod } from "../common";
 import { fetchB2Pool } from "./b2Pool";
 import { fetchBlockvase } from "./blockvase";
 import { fetchConvoy } from "./convoy";
@@ -37,7 +37,7 @@ export type BitcoinPool = {
 
 export type PoolFetchError = {
   info: BitcoinPoolInfo;
-  fetchError: string;
+  fetchError: ServerError;
 };
 
 export type PoolFetchResult = BitcoinPool | PoolFetchError;

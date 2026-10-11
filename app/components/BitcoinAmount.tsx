@@ -19,16 +19,15 @@ export default defineComponent({
   },
   setup(props) {
     useScript("https://kit.fontawesome.com/090ca49637.js");
+    const { n } = useI18n();
     return () => {
       switch (props.unit) {
-        case "Bitcoin":
-          return `₿${(props.sats / COIN).toLocaleString(undefined, BTC_FORMAT_OPTIONS)}`;
-        case "Satoshis":
+        case "btc":
+          return `₿${n(props.sats / COIN, BTC_FORMAT_OPTIONS)}`;
+        case "sat":
           return (
             <span>
-              {props.sats.toLocaleString(undefined, {
-                maximumFractionDigits: 0,
-              })}
+              {n(props.sats, { maximumFractionDigits: 0 })}
               <i class="fak fa-regular" />
             </span>
           );
