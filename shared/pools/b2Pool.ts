@@ -1,7 +1,7 @@
 import type { PoolFetchResult } from ".";
 import { fetchMiningPool } from "../mempool";
 import { findBestPing } from "../util";
-import { fetchPrimaryAndMempool, handleFetchError } from "./util";
+import { handleFetchError } from "./util";
 
 type VarDiffCompatiblePort = {
   protocol: "stratum-v1" | "stratum-v2" | "datum";

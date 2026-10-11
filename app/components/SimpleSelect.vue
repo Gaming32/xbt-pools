@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="A extends readonly string[]">
+import { defineModel, defineProps } from "vue";
 import type { TranslationJsonObjects } from "~/utils/util";
-import type { DefineLocaleMessage } from "vue-i18n";
 
 const model = defineModel<A[number]>();
 defineProps<{

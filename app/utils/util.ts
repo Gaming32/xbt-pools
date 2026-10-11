@@ -15,7 +15,8 @@ export type FlatJsonObjectPaths<
 > = Key extends string
   ? T[Key] extends Record<RequiredFields, string>
     ? `${Key}`
-    : T[Key] extends Record<string, any>
+    : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      T[Key] extends Record<string, any>
       ? `${Key}.${FlatJsonObjectPaths<T[Key], RequiredFields>}`
       : never
   : never;
