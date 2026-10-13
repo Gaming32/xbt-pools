@@ -10,6 +10,8 @@ type StatsResponse = {
   blocks_all_time: number;
   fee_bps: number;
   hashrate_hs: number;
+  local_work_fee_bps: number;
+  sv1_fee_pool_pct: number;
 };
 
 type InfoResponse = {
@@ -20,39 +22,22 @@ type InfoResponse = {
   };
 };
 
-type ContributorsResponse = Array<{
-  workers: Array<{
-    hashrate_hs: number;
-    connection_type: "datum" | "sv1" | null;
-  }>;
-}>;
-
 const INFO = { name: "RIPTIDE", homepage: "https://riptide.maveth.ca/" };
 const START_DATE = /* @__PURE__ */ new Date("2026-08-30T21:54:30Z").getTime(); // Block height 961914
 
 export async function fetchRiptide(): Promise<PoolFetchResult> {
   try {
-    const [statsResponse, infoResponse, contributorsResponse] =
-      await Promise.all([
-        $fetch(`${API_ROOT}/stats`) as Promise<StatsResponse>,
-        $fetch(`${API_ROOT}/info`) as Promise<InfoResponse>,
-        $fetch(
-          `${API_ROOT}/contributors?limit=500`,
-        ) as Promise<ContributorsResponse>,
-      ]);
+    const [statsResponse, infoResponse] = await Promise.all([
+      $fetch(`${API_ROOT}/stats`) as Promise<StatsResponse>,
+      $fetch(`${API_ROOT}/info`) as Promise<InfoResponse>,
+    ]);
     return {
       info: INFO,
       hashrateHS: statsResponse.hashrate_hs,
       feeMultiple: statsResponse.fee_bps / MULTIPLE_PER_BPS,
-      stratumHashrateMultiple: contributorsResponse
-        .flatMap((x) => x.workers)
-        .filter((x) => x.connection_type === "sv1")
-        .reduce(
-          (sum, { hashrate_hs }) =>
-            sum + hashrate_hs / statsResponse.hashrate_hs,
-          0,
-        ),
-      stratumSkimMultiple: 0.005,
+      stratumHashrateMultiple: statsResponse.sv1_fee_pool_pct / 100,
+      stratumSkimMultiple:
+        (statsResponse.local_work_fee_bps / MULTIPLE_PER_BPS) * 0.5,
       blocksInPeriod: {
         "24h": statsResponse.blocks_last_24h,
         "1w": statsResponse.blocks_last_7d,
