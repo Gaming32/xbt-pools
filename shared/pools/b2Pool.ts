@@ -71,8 +71,8 @@ export async function fetchB2Pool(): Promise<PoolFetchResult> {
               (entry): entry is [string, VarDiffCompatiblePort] =>
                 entry[1].protocol === "datum",
             )
-            .map(([port, info]) => [port, info.varDiff.minDiff] as const)
-            .sort(([, diffA], [, diffB]) => diffA - diffB),
+            .map(([port, info]) => [info.varDiff.minDiff, +port] as const)
+            .sort(([diffA], [diffB]) => diffA - diffB),
         ),
         poolPubkey:
           "8ba1f7693d117620b1e5a46828f1cd187efe81114e9cee6a063bfbbe2f1b6cff0fc681d3c1ca7cb19c0e0dbddfbea65d5509e974e7f0000112dd07cba744a716",

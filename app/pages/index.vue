@@ -13,6 +13,7 @@ import {
   type PoolFetchResult,
 } from "#shared/pools";
 import type { Comparator } from "#shared/util";
+import { VCodeBlock } from "@wdns/vue-code-block";
 import { poolRevenuePerDay } from "~/revenue";
 
 const SORT_OPTIONS = ["name", "revenue", "hashrate"] as const;
@@ -112,6 +113,24 @@ const poolRevenue = computed(() => {
   }
   return result;
 });
+
+const poolDifficulty = Object.fromEntries(
+  BITCOIN_POOL_IDS.map((id) => [id, ref()]),
+) as Record<BitcoinPoolId, Ref<number | undefined>>;
+watch(data, () => {
+  if (!data.value) return;
+  for (const poolId of BITCOIN_POOL_IDS) {
+    if (!poolDifficulty[poolId].value) {
+      const pool = data.value.pools[poolId];
+      if ("fetchError" in pool) continue;
+      poolDifficulty[poolId].value = Object.keys(
+        pool.connectInfo.poolPortsByDifficulty,
+      )
+        .map(Number)
+        .find((d) => d >= 1024);
+    }
+  }
+});
 </script>
 
 <template>
@@ -168,6 +187,46 @@ const poolRevenue = computed(() => {
           <BitcoinAmount :sats="poolRevenue[pool.id]!" :unit="units" />/TH/{{
             $t("perDay")
           }}
+          <br />
+          <details class="connect-info">
+            <summary>{{ $t("connectInfo.name") }}</summary>
+            <div class="connect-info-body">
+              <div>
+                Difficulty:
+                <select v-model="poolDifficulty[pool.id].value">
+                  <option
+                    v-for="(_, difficulty) in pool.connectInfo
+                      .poolPortsByDifficulty"
+                    :key="difficulty"
+                    :value="+difficulty"
+                  >
+                    {{ difficulty }}
+                  </option>
+                </select>
+              </div>
+              <span v-if="pool.connectInfo.requireV3" class="warning"
+                ><i18n-t keypath="connectInfo.protocolV3Warning"
+                  ><template #protocolV3
+                    ><code>protocol_v3</code></template
+                  ></i18n-t
+                ></span
+              >
+              <VCodeBlock
+                highlightjs
+                lang="json"
+                :code="`{
+  &quot;datum&quot;: {
+    &quot;pool_host&quot;: ${JSON.stringify(pool.connectInfo.poolHost)},
+    &quot;pool_port&quot;: ${
+      pool.connectInfo.poolPortsByDifficulty[poolDifficulty[pool.id].value!]
+    },
+    &quot;pool_pubkey&quot;: ${JSON.stringify(pool.connectInfo.poolPubkey)}\
+${pool.connectInfo.requireV3 ? `,\n    &quot;protocol_v3&quot;: true // ${$t('connectInfo.protocolV3Comment')}` : ''}
+  }
+}`"
+              />
+            </div>
+          </details>
         </template>
       </div>
     </div>
@@ -195,6 +254,15 @@ const poolRevenue = computed(() => {
     padding: 1rem;
     border: 3px solid orange;
     border-radius: 10px;
+
+    .connect-info {
+      width: 50vw;
+
+      .connect-info-body {
+        padding-left: 1rem;
+        contain: inline-size;
+      }
+    }
   }
 }
 

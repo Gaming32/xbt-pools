@@ -22,6 +22,11 @@
   "allTimeWarning": "When using the \"@:{'timePeriods.all'}\" averaging period, block fees will instead be averaged over the last 3 years (mempool.guide limitation)",
   "loading": "Loading...",
   "perDay": "day",
+  "connectInfo": {
+    "name": "Connection info",
+    "protocolV3Warning": "This pool requires connecting with either CONVOY DATUM or using the {protocolV3} setting with RATUM",
+    "protocolV3Comment": "Only required when using RATUM"
+  },
   "serverError": {
     "statusCode": "Status code {0}",
     "generalFetch": "Failed to fetch: {0}"
