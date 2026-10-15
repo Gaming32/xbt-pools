@@ -16,6 +16,8 @@ import type { Comparator } from "#shared/util";
 import { VCodeBlock } from "@wdns/vue-code-block";
 import { poolRevenuePerDay } from "~/revenue";
 
+const theme = useTheme();
+
 const SORT_OPTIONS = ["name", "revenue", "hashrate"] as const;
 const SORT_DIRECTIONS = ["asc", "desc"] as const;
 
@@ -175,7 +177,6 @@ watch(data, () => {
     <div v-if="data" class="pool-table">
       <div v-for="pool in sortedPools" :key="pool.info.name" class="pool-row">
         <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a>
-        <br />
         <template v-if="'fetchError' in pool">{{
           formatServerError(pool.fetchError)
         }}</template>
@@ -183,13 +184,14 @@ watch(data, () => {
           <span :title="`${$n(pool.hashrateHS)} H/s`">
             {{ formatMetric(pool.hashrateHS, 2) }}H/s
           </span>
-          <br />
-          <BitcoinAmount :sats="poolRevenue[pool.id]!" :unit="units" />/TH/{{
-            $t("perDay")
-          }}
-          <br />
+          <span
+            ><BitcoinAmount :sats="poolRevenue[pool.id]!" :unit="units" />/TH/{{
+              $t("perDay")
+            }}</span
+          >
+          <details></details>
           <details class="connect-info">
-            <summary>{{ $t("connectInfo.name") }}</summary>
+            <summary>{{ $t("connectInfo.title") }}</summary>
             <div class="connect-info-body">
               <div>
                 Difficulty:
@@ -214,6 +216,11 @@ watch(data, () => {
               <VCodeBlock
                 highlightjs
                 lang="json"
+                :theme="
+                  theme.current.value.dark
+                    ? 'base16-google-dark'
+                    : 'base16-google-light'
+                "
                 :code="`{
   &quot;datum&quot;: {
     &quot;pool_host&quot;: ${JSON.stringify(pool.connectInfo.poolHost)},
@@ -250,7 +257,8 @@ ${pool.connectInfo.requireV3 ? `,\n    &quot;protocol_v3&quot;: true // ${$t('co
   row-gap: 1rem;
 
   .pool-row {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
     padding: 1rem;
     border: 3px solid orange;
     border-radius: 10px;

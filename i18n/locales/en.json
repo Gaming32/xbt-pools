@@ -23,7 +23,7 @@
   "loading": "Loading...",
   "perDay": "day",
   "connectInfo": {
-    "name": "Connection info",
+    "title": "Connection info",
     "protocolV3Warning": "This pool requires connecting with either CONVOY DATUM or using the {protocolV3} setting with RATUM",
     "protocolV3Comment": "Only required when using RATUM"
   },
