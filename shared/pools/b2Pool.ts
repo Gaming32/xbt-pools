@@ -54,7 +54,7 @@ export async function fetchB2Pool(): Promise<PoolFetchResult> {
     return {
       info: INFO,
       hashrateHS: poolResponse.pool.poolStats.poolHashrate,
-      feeMultiple: 0,
+      feeMultiple: 0.01,
       stratumHashrateMultiple: 0, // Unknown; doesn't matter anyway since no skim
       stratumSkimMultiple: 0,
       blocksInPeriod: {
