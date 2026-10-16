@@ -22,6 +22,16 @@
   "allTimeWarning": "When using the \"@:{'timePeriods.all'}\" averaging period, block fees will instead be averaged over the last 3 years (mempool.guide limitation)",
   "loading": "Loading...",
   "perDay": "day",
+  "math": {
+    "title": "Revenue math",
+    "blocksPerDay": "{0} pool blocks per day (average)",
+    "poolShare": "your {0} pool share",
+    "blockSubsidy": "{0} block subsidy",
+    "blockFee": "{0} block fee (average)",
+    "fee": "{0} fee",
+    "stratumHashrate": "{0} Sv1 hashrate",
+    "stratumSkim": "{0} Sv1 skim/boost/bonus"
+  },
   "connectInfo": {
     "title": "Connection info",
     "protocolV3Warning": "This pool requires connecting with either CONVOY DATUM or using the {protocolV3} setting with RATUM",

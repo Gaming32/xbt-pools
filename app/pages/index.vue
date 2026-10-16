@@ -14,7 +14,7 @@ import {
 } from "#shared/pools";
 import type { Comparator } from "#shared/util";
 import { VCodeBlock } from "@wdns/vue-code-block";
-import { poolRevenuePerDay } from "~/revenue";
+import { poolRevenuePerDay, type ComputedRevenuePerDay } from "~/revenue";
 
 const theme = useTheme();
 
@@ -46,7 +46,8 @@ const sortedPools = computed(() => {
       baseComparator = (a, b) => a.hashrateHS - b.hashrateHS;
       break;
     case "revenue":
-      baseComparator = (a, b) => poolRevenuePerDay(a) - poolRevenuePerDay(b);
+      baseComparator = (a, b) =>
+        poolRevenuePerDay(a).revenue - poolRevenuePerDay(b).revenue;
       break;
   }
 
@@ -80,11 +81,10 @@ const sortedPools = computed(() => {
     .sort(comparator);
 });
 
-const poolRevenue = computed(() => {
-  if (data.value === undefined) {
-    return {};
+const averageBlockFee = computed(() => {
+  if (!data.value) {
+    return 0;
   }
-
   const FEE_PERIOD_MAPPING: Record<
     TimePeriod,
     keyof Awaited<ReturnType<typeof fetchAllData>>["blockFees"]
@@ -95,12 +95,19 @@ const poolRevenue = computed(() => {
   };
   const blockFees =
     data.value.blockFees[FEE_PERIOD_MAPPING[averagingPeriod.value]];
-  const averageBlockFee = blockFees.reduce(
+  return blockFees.reduce(
     (sum, fees) => sum + fees.avgFees / blockFees.length,
     0,
   );
+});
 
-  const result: Partial<Record<BitcoinPoolId, number>> = {};
+const yourHashrate = ref(HS_PER_THS);
+
+const poolRevenue = computed(() => {
+  if (!data.value) {
+    return {};
+  }
+  const result: Partial<Record<BitcoinPoolId, ComputedRevenuePerDay>> = {};
   for (const poolId of BITCOIN_POOL_IDS) {
     const pool = data.value.pools[poolId];
     if ("fetchError" in pool) {
@@ -109,8 +116,8 @@ const poolRevenue = computed(() => {
     result[poolId] = poolRevenuePerDay(pool, {
       nextBlockHeight: data.value.nextBlockHeight,
       luckPeriod: averagingPeriod.value,
-      hashrateHS: HS_PER_THS,
-      blockFee: averageBlockFee,
+      hashrateHS: yourHashrate.value,
+      blockFee: averageBlockFee.value,
     });
   }
   return result;
@@ -182,14 +189,104 @@ watch(data, () => {
         }}</template>
         <template v-else>
           <span :title="`${$n(pool.hashrateHS)} H/s`">
-            {{ formatMetric(pool.hashrateHS, 2) }}H/s
+            {{ formatMetric(pool.hashrateHS) }}H/s
           </span>
           <span
-            ><BitcoinAmount :sats="poolRevenue[pool.id]!" :unit="units" />/TH/{{
-              $t("perDay")
-            }}</span
+            ><BitcoinAmount
+              :sats="poolRevenue[pool.id]!.revenue"
+              :unit="units"
+            />/TH/{{ $t("perDay") }}</span
           >
-          <details></details>
+          <details>
+            <summary>{{ $t("math.title") }}</summary>
+            <div class="math-info-body">
+              <span
+                ><i18n-t keypath="math.blocksPerDay"
+                  ><span class="value">{{
+                    $n(poolRevenue[pool.id]!.blocksPerDay, NUMBER_FORMAT)
+                  }}</span></i18n-t
+                ></span
+              >
+              <span
+                ><span class="value">&lowast; </span>
+                <i18n-t keypath="math.poolShare"
+                  ><span class="value"
+                    >{{ formatMetric(yourHashrate) }}H/s /
+                    {{ formatMetric(pool.hashrateHS + yourHashrate) }}H/s
+                    &asymp;
+                    {{
+                      $n(
+                        (yourHashrate / (pool.hashrateHS + yourHashrate)) * 100,
+                        NUMBER_FORMAT,
+                      )
+                    }}%</span
+                  ></i18n-t
+                ></span
+              >
+              <span
+                ><span class="value">&lowast; (</span>
+                <i18n-t keypath="math.blockSubsidy"
+                  ><span class="value"
+                    ><BitcoinAmount
+                      :sats="poolRevenue[pool.id]!.blockSubsidy"
+                      :unit="units" /></span></i18n-t
+                ><span class="value"> + </span
+                ><i18n-t keypath="math.blockFee"
+                  ><span class="value"
+                    ><BitcoinAmount
+                      :sats="averageBlockFee"
+                      :unit="units" /></span></i18n-t
+                ><span class="value">)</span></span
+              >
+              <span
+                v-if="pool.feeMultiple && pool.stratumSkimMultiple"
+                class="value"
+                >&lowast; (
+              </span>
+              <span
+                v-if="pool.feeMultiple"
+                :class="{ negative: true, grouped: pool.stratumSkimMultiple }"
+                ><span v-if="!pool.stratumSkimMultiple" class="value"
+                  >&lowast; (</span
+                ><span class="value"
+                  >{{ $n(100, NUMBER_FORMAT) }}% &minus;
+                </span>
+                <i18n-t keypath="math.fee"
+                  ><span class="value"
+                    >{{ $n(pool.feeMultiple * 100, NUMBER_FORMAT) }}%</span
+                  ></i18n-t
+                ><span v-if="!pool.stratumSkimMultiple" class="value"
+                  >)</span
+                ></span
+              >
+              <span
+                v-if="pool.stratumSkimMultiple"
+                :class="{ positive: true, grouped: pool.feeMultiple }"
+                ><span v-if="!pool.feeMultiple" class="value"
+                  >&lowast; ({{ $n(100, NUMBER_FORMAT) }}% + </span
+                ><span v-else>+ </span>
+                <i18n-t keypath="math.stratumHashrate"
+                  ><span class="value"
+                    >{{
+                      $n(pool.stratumHashrateMultiple * 100, NUMBER_FORMAT)
+                    }}%</span
+                  ></i18n-t
+                ><span class="value"> &lowast; </span
+                ><i18n-t keypath="math.stratumSkim"
+                  ><span class="value"
+                    >{{
+                      $n(pool.stratumSkimMultiple * 100, NUMBER_FORMAT)
+                    }}%</span
+                  ></i18n-t
+                ><span v-if="!pool.feeMultiple" class="value">)</span></span
+              >
+              <span
+                v-if="pool.feeMultiple && pool.stratumSkimMultiple"
+                class="value"
+                >)</span
+              >
+            </div>
+          </details>
           <details class="connect-info">
             <summary>{{ $t("connectInfo.title") }}</summary>
             <div class="connect-info-body">
@@ -263,12 +360,34 @@ ${pool.connectInfo.requireV3 ? `,\n    &quot;protocol_v3&quot;: true // ${$t('co
     border: 3px solid orange;
     border-radius: 10px;
 
+    .math-info-body {
+      padding-left: 1rem;
+      display: flex;
+      flex-direction: column;
+      font-size: smaller;
+
+      .value {
+        font-size: larger;
+      }
+
+      .grouped {
+        padding-left: 1rem;
+      }
+
+      .positive {
+        color: green;
+      }
+
+      .negative {
+        color: red;
+      }
+    }
+
     .connect-info {
-      width: 50vw;
+      max-width: 50vw;
 
       .connect-info-body {
         padding-left: 1rem;
-        contain: inline-size;
       }
     }
   }

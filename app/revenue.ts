@@ -8,6 +8,12 @@ export type RevenuePerDayOptions = {
   blockFee?: number;
 };
 
+export type ComputedRevenuePerDay = {
+  revenue: number;
+  blocksPerDay: number;
+  blockSubsidy: number;
+};
+
 export function poolRevenuePerDay(
   pool: BitcoinPool,
   {
@@ -18,7 +24,7 @@ export function poolRevenuePerDay(
     hashrateHS = HS_PER_THS,
     blockFee = 0,
   }: RevenuePerDayOptions = {},
-) {
+): ComputedRevenuePerDay {
   const blocksPerDay =
     pool.blocksInPeriod[luckPeriod] / daysInTimePeriod(pool, luckPeriod);
   const baseBlockReward = subsidyFromHeight(nextBlockHeight) + blockFee;
@@ -27,7 +33,11 @@ export function poolRevenuePerDay(
     baseBlockReward * pool.stratumHashrateMultiple * pool.stratumSkimMultiple;
 
   const poolShare = hashrateHS / (pool.hashrateHS + hashrateHS);
-  return datumBlockReward * poolShare * blocksPerDay;
+  return {
+    revenue: datumBlockReward * poolShare * blocksPerDay,
+    blocksPerDay,
+    blockSubsidy: baseBlockReward - blockFee,
+  };
 }
 
 function subsidyFromHeight(height: number): number {

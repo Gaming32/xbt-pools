@@ -51,17 +51,6 @@ export function queryParamToUnion<A extends readonly string[]>(
   return fallback;
 }
 
-const METRIC_PREFIXES = ["", "K", "M", "G", "T", "P", "E", "Z", "Y", "R", "Q"];
-export function formatMetric(value: number, fractionDigits?: number) {
-  const { n } = useI18n();
-  let prefixIndex = 0;
-  while (prefixIndex < METRIC_PREFIXES.length - 1 && value >= 2000) {
-    prefixIndex++;
-    value /= 1000;
-  }
-  return `${n(value, { maximumFractionDigits: fractionDigits })} ${METRIC_PREFIXES[prefixIndex]}`;
-}
-
 export async function fetchAllData() {
   async function fetchAllBlockFees<
     A extends readonly Parameters<typeof fetchBlockFees>[0][],
