@@ -29,8 +29,15 @@ const { data, refresh, pending } = await useLazyAsyncData(
 
 const averagingPeriod = useState<TimePeriod>("timePeriod", () => "1w");
 const units = useState<BitcoinUnit>("units", () => "btc");
+
 const sortOption = queryUnionRef("sort", SORT_OPTIONS, "revenue");
 const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "desc");
+
+const yourHashrate = useState("yourHashrate", () => 1);
+const yourHashrateMultiple = useState<MetricPrefix>(
+  "yourHashrateMultiple",
+  () => "T",
+);
 
 const sortedPools = computed(() => {
   if (data.value === undefined) {
@@ -101,7 +108,11 @@ const averageBlockFee = computed(() => {
   );
 });
 
-const yourHashrate = ref(HS_PER_THS);
+const yourHashrateCalculated = computed(() =>
+  typeof yourHashrate.value === "number"
+    ? fromMetric(yourHashrate.value, yourHashrateMultiple.value)
+    : HS_PER_THS,
+);
 
 const poolRevenue = computed(() => {
   if (!data.value) {
@@ -116,7 +127,7 @@ const poolRevenue = computed(() => {
     result[poolId] = poolRevenuePerDay(pool, {
       nextBlockHeight: data.value.nextBlockHeight,
       luckPeriod: averagingPeriod.value,
-      hashrateHS: yourHashrate.value,
+      hashrateHS: yourHashrateCalculated.value,
       blockFee: averageBlockFee.value,
     });
   }
@@ -181,6 +192,19 @@ watch(data, () => {
         />
       </button>
     </div>
+    <div>
+      <i18n-t keypath="yourHashrate">
+        <template #input>
+          <input v-model="yourHashrate" type="number" />
+          &thinsp;
+          <SimpleSelect
+            v-model="yourHashrateMultiple"
+            :options="METRIC_PREFIXES"
+            :display="(prefix) => prefix + 'H/s'"
+          />
+        </template>
+      </i18n-t>
+    </div>
     <div v-if="data" class="pool-table">
       <div v-for="pool in sortedPools" :key="pool.info.name" class="pool-row">
         <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a>
@@ -195,7 +219,7 @@ watch(data, () => {
             ><BitcoinAmount
               :sats="poolRevenue[pool.id]!.revenue"
               :unit="units"
-            />/TH/{{ $t("perDay") }}</span
+            />/{{ $t("perDay") }}</span
           >
           <details>
             <summary>{{ $t("math.title") }}</summary>
@@ -211,12 +235,15 @@ watch(data, () => {
                 ><span class="value">&lowast; </span>
                 <i18n-t keypath="math.poolShare"
                   ><span class="value"
-                    >{{ formatMetric(yourHashrate) }}H/s /
-                    {{ formatMetric(pool.hashrateHS + yourHashrate) }}H/s
-                    &asymp;
+                    >{{ formatMetric(yourHashrateCalculated) }}H/s /
+                    {{
+                      formatMetric(pool.hashrateHS + yourHashrateCalculated)
+                    }}H/s &asymp;
                     {{
                       $n(
-                        (yourHashrate / (pool.hashrateHS + yourHashrate)) * 100,
+                        (yourHashrateCalculated /
+                          (pool.hashrateHS + yourHashrateCalculated)) *
+                          100,
                         NUMBER_FORMAT,
                       )
                     }}%</span

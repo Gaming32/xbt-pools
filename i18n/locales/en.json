@@ -8,6 +8,7 @@
     "1w": "1 week",
     "all": "All time"
   },
+  "yourHashrate": "Your hashrate: {input}",
   "sort": {
     "option": {
       "name": "Name",

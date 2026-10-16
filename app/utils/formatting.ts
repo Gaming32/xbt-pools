@@ -1,7 +1,21 @@
 export const DECIMALS = 2;
 export const NUMBER_FORMAT = { maximumFractionDigits: DECIMALS };
+export const METRIC_PREFIXES = [
+  "",
+  "K",
+  "M",
+  "G",
+  "T",
+  "P",
+  "E",
+  "Z",
+  "Y",
+  "R",
+  "Q",
+] as const;
 
-const METRIC_PREFIXES = ["", "K", "M", "G", "T", "P", "E", "Z", "Y", "R", "Q"];
+export type MetricPrefix = (typeof METRIC_PREFIXES)[number];
+
 export function formatMetric(value: number) {
   const { n } = useI18n();
   let prefixIndex = 0;
@@ -10,4 +24,8 @@ export function formatMetric(value: number) {
     value /= 1000;
   }
   return `${n(value, NUMBER_FORMAT)} ${METRIC_PREFIXES[prefixIndex]}`;
+}
+
+export function fromMetric(mantissa: number, exponent: MetricPrefix) {
+  return mantissa * Math.pow(1000, METRIC_PREFIXES.indexOf(exponent));
 }
