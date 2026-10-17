@@ -465,7 +465,7 @@ const bestRevenue = computed(() =>
                     >
                     <v-divider class="my-2" />
                     <span class="font-weight-bold"
-                      >=
+                      >&asymp;
                       <BitcoinAmount
                         :sats="poolRevenue[pool.id]!.revenue"
                         :unit="units"
