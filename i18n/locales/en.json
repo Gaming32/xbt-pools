@@ -1,4 +1,8 @@
 {
+  "title": "DATUM Pools",
+  "subtitle": "Compare estimated mining revenue across DATUM pools",
+  "toggleTheme": "Toggle dark mode",
+  "estimatedRevenue": "Estimated revenue",
   "bitcoinUnits": {
     "btc": "Bitcoin",
     "sat": "Satoshis"
@@ -9,6 +13,12 @@
     "all": "All time"
   },
   "allTimeWarning": "When using the \"@:{'timePeriods.all'}\" averaging period, block fees will instead be averaged over the last 3 years (mempool.guide limitation)",
+  "controls": {
+    "units": "Units",
+    "averagingPeriod": "Averaging period",
+    "sortBy": "Sort by",
+    "refresh": "Refresh"
+  },
   "sort": {
     "option": {
       "name": "Name",
@@ -20,8 +30,7 @@
       "desc": "Desc"
     }
   },
-  "yourHashrate": "Your hashrate: {input}",
-  "loading": "Loading...",
+  "yourHashrate": "Your hashrate",
   "perDay": "day",
   "math": {
     "title": "Revenue math",
@@ -37,7 +46,8 @@
   "connectInfo": {
     "title": "Connection info",
     "protocolV3Warning": "This pool requires connecting with either CONVOY DATUM or using the {protocolV3} setting with RATUM",
-    "protocolV3Comment": "Only required when using RATUM"
+    "protocolV3Comment": "Only required when using RATUM",
+    "difficulty": "Difficulty"
   },
   "serverError": {
     "statusCode": "Status code {0}",

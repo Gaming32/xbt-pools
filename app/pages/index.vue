@@ -151,205 +151,372 @@ watch(data, () => {
     }
   }
 });
+
+const bestRevenue = computed(() =>
+  Math.max(0, ...Object.values(poolRevenue.value).map((r) => r.revenue)),
+);
 </script>
 
 <template>
-  <div>
-    <div>
-      <SimpleSelect
-        v-model="units"
-        :options="BITCOIN_UNITS"
-        lang-key="bitcoinUnits"
-      />
-      &thinsp;
-      <SimpleSelect
-        v-model="averagingPeriod"
-        :options="TIME_PERIODS"
-        lang-key="timePeriods"
-      />
-      &thinsp;
-      <span v-if="averagingPeriod === 'all'" class="warning">{{
-        $t("allTimeWarning")
-      }}</span>
-    </div>
-    <div>
-      <SimpleSelect
-        v-model="sortOption"
-        :options="SORT_OPTIONS"
-        lang-key="sort.option"
-      />
-      &thinsp;
-      <SimpleSelect
-        v-model="sortDirection"
-        :options="SORT_DIRECTIONS"
-        lang-key="sort.direction"
-      />
-      &thinsp;
-      <button class="refresh-button" @click="refresh()">
-        <Icon
-          name="i-lucide-refresh-cw"
-          :class="{ spinning: data && pending }"
-        />
-      </button>
-    </div>
-    <div>
-      <i18n-t keypath="yourHashrate">
-        <template #input>
-          <input v-model="yourHashrate" type="number" />
-          &thinsp;
-          <SimpleSelect
-            v-model="yourHashrateMultiple"
-            :options="METRIC_PREFIXES"
-            :display="(prefix) => prefix + 'H/s'"
-          />
-        </template>
-      </i18n-t>
-    </div>
-    <div v-if="data" class="pool-table">
-      <div v-for="pool in sortedPools" :key="pool.info.name" class="pool-row">
-        <a :href="pool.info.homepage" target="_blank">{{ pool.info.name }}</a>
-        <template v-if="'fetchError' in pool">{{
-          formatServerError(pool.fetchError)
-        }}</template>
-        <template v-else>
-          <span :title="`${$n(pool.hashrateHS)} H/s`">
-            {{ formatMetric(pool.hashrateHS) }}H/s
-          </span>
-          <span
-            ><BitcoinAmount
-              :sats="poolRevenue[pool.id]!.revenue"
-              :unit="units"
-            />/{{ $t("perDay") }}</span
-          >
-          <details>
-            <summary>{{ $t("math.title") }}</summary>
-            <div class="math-info-body">
-              <span
-                ><i18n-t keypath="math.blocksPerDay"
-                  ><span class="value">{{
-                    $n(poolRevenue[pool.id]!.blocksPerDay, NUMBER_FORMAT)
-                  }}</span></i18n-t
-                ></span
-              >
-              <span
-                ><span class="value">&lowast; </span>
-                <i18n-t keypath="math.poolShare"
-                  ><span class="value"
-                    >{{ formatMetric(yourHashrateCalculated) }}H/s /
-                    {{
-                      formatMetric(pool.hashrateHS + yourHashrateCalculated)
-                    }}H/s &asymp;
-                    {{
-                      $n(
-                        (yourHashrateCalculated /
-                          (pool.hashrateHS + yourHashrateCalculated)) *
-                          100,
-                        NUMBER_FORMAT,
-                      )
-                    }}%</span
-                  ></i18n-t
-                ></span
-              >
-              <span
-                ><span class="value">&lowast; (</span>
-                <i18n-t keypath="math.blockSubsidy"
-                  ><span class="value"
-                    ><BitcoinAmount
-                      :sats="poolRevenue[pool.id]!.blockSubsidy"
-                      :unit="units" /></span></i18n-t
-                ><span class="value"> + </span
-                ><i18n-t keypath="math.blockFee"
-                  ><span class="value"
-                    ><BitcoinAmount
-                      :sats="averageBlockFee"
-                      :unit="units" /></span></i18n-t
-                ><span class="value">)</span></span
-              >
-              <span
-                v-if="pool.feeMultiple && pool.stratumSkimMultiple"
-                class="value"
-                >&lowast; (
-              </span>
-              <span
-                v-if="pool.feeMultiple"
-                :class="{ negative: true, grouped: pool.stratumSkimMultiple }"
-                ><span v-if="!pool.stratumSkimMultiple" class="value"
-                  >&lowast; (</span
-                ><span class="value"
-                  >{{ $n(100, NUMBER_FORMAT) }}% &minus;
-                </span>
-                <i18n-t keypath="math.fee"
-                  ><span class="value"
-                    >{{ $n(pool.feeMultiple * 100, NUMBER_FORMAT) }}%</span
-                  ></i18n-t
-                ><span v-if="!pool.stratumSkimMultiple" class="value"
-                  >)</span
-                ></span
-              >
-              <span
-                v-if="pool.stratumSkimMultiple"
-                :class="{ positive: true, grouped: pool.feeMultiple }"
-                ><span v-if="!pool.feeMultiple" class="value"
-                  >&lowast; ({{ $n(100, NUMBER_FORMAT) }}% + </span
-                ><span v-else>+ </span>
-                <i18n-t keypath="math.stratumHashrate"
-                  ><span class="value"
-                    >{{
-                      $n(pool.stratumHashrateMultiple * 100, NUMBER_FORMAT)
-                    }}%</span
-                  ></i18n-t
-                ><span class="value"> &lowast; </span
-                ><i18n-t
-                  tag="span"
-                  class="explainer"
-                  :title="$t('math.skimExplanation')"
-                  keypath="math.stratumSkim"
-                  ><span class="value"
-                    >{{
-                      $n(pool.stratumSkimMultiple * 100, NUMBER_FORMAT)
-                    }}%</span
-                  ></i18n-t
-                ><span v-if="!pool.feeMultiple" class="value">)</span></span
-              >
-              <span
-                v-if="pool.feeMultiple && pool.stratumSkimMultiple"
-                class="value"
-                >)</span
-              >
+  <v-container class="py-6 py-md-10" max-width="1280">
+    <v-card variant="flat" border class="mb-6">
+      <v-card-text class="pa-4 pa-md-5">
+        <v-row align="center">
+          <v-col cols="12" md="4">
+            <div class="d-flex ga-2">
+              <v-text-field
+                v-model.number="yourHashrate"
+                type="number"
+                min="0"
+                :label="$t('yourHashrate')"
+                prepend-inner-icon="lucide:cpu"
+              />
+              <SimpleSelect
+                v-model="yourHashrateMultiple"
+                class="prefix-select"
+                :options="METRIC_PREFIXES"
+                :display="(prefix) => prefix + 'H/s'"
+              />
             </div>
-          </details>
-          <details class="connect-info">
-            <summary>{{ $t("connectInfo.title") }}</summary>
-            <div class="connect-info-body">
-              <div>
-                Difficulty:
-                <select v-model="poolDifficulty[pool.id].value">
-                  <option
-                    v-for="(_, difficulty) in pool.connectInfo
-                      .poolPortsByDifficulty"
-                    :key="difficulty"
-                    :value="+difficulty"
-                  >
-                    {{ difficulty }}
-                  </option>
-                </select>
-              </div>
-              <span v-if="pool.connectInfo.requireV3" class="warning"
-                ><i18n-t keypath="connectInfo.protocolV3Warning"
-                  ><template #protocolV3
-                    ><code>protocol_v3</code></template
-                  ></i18n-t
-                ></span
+          </v-col>
+          <v-col cols="6" sm="3" md="2">
+            <SimpleSelect
+              v-model="units"
+              :label="$t('controls.units')"
+              :options="BITCOIN_UNITS"
+              lang-key="bitcoinUnits"
+            />
+          </v-col>
+          <v-col cols="6" sm="3" md="2">
+            <SimpleSelect
+              v-model="averagingPeriod"
+              :label="$t('controls.averagingPeriod')"
+              :options="TIME_PERIODS"
+              lang-key="timePeriods"
+            />
+          </v-col>
+          <v-col cols="12" sm="6" md="4">
+            <div class="d-flex align-center ga-2">
+              <SimpleSelect
+                v-model="sortOption"
+                :label="$t('controls.sortBy')"
+                :options="SORT_OPTIONS"
+                lang-key="sort.option"
+              />
+              <v-btn-toggle
+                v-model="sortDirection"
+                mandatory
+                divided
+                variant="outlined"
+                color="primary"
+                density="comfortable"
+                rounded="lg"
+                class="sort-toggle"
               >
-              <VCodeBlock
-                highlightjs
-                lang="json"
-                :theme="
-                  theme.current.value.dark
-                    ? 'base16-google-dark'
-                    : 'base16-google-light'
+                <v-btn
+                  v-for="direction in SORT_DIRECTIONS"
+                  :key="direction"
+                  :value="direction"
+                  :title="$t(`sort.direction.${direction}`)"
+                  :aria-label="$t(`sort.direction.${direction}`)"
+                  :icon="
+                    direction === 'asc'
+                      ? 'lucide:arrow-up-narrow-wide'
+                      : 'lucide:arrow-down-wide-narrow'
+                  "
+                />
+              </v-btn-toggle>
+              <v-btn
+                icon="lucide:refresh-cw"
+                variant="tonal"
+                color="primary"
+                rounded="lg"
+                :title="$t('controls.refresh')"
+                :aria-label="$t('controls.refresh')"
+                :loading="data && pending"
+                @click="refresh()"
+              />
+            </div>
+          </v-col>
+        </v-row>
+        <v-expand-transition>
+          <v-alert
+            v-if="averagingPeriod === 'all'"
+            type="warning"
+            variant="tonal"
+            density="compact"
+            class="mt-4"
+            :text="$t('allTimeWarning')"
+          />
+        </v-expand-transition>
+      </v-card-text>
+    </v-card>
+
+    <v-row v-if="data">
+      <v-col
+        v-for="pool in sortedPools"
+        :key="pool.info.name"
+        cols="12"
+        md="6"
+        lg="4"
+      >
+        <v-card variant="flat" border class="pool-card">
+          <v-card-item>
+            <v-card-title class="font-weight-bold">
+              <a
+                :href="pool.info.homepage"
+                target="_blank"
+                rel="noopener"
+                class="pool-link"
+                >{{ pool.info.name
+                }}<v-icon
+                  icon="lucide:external-link"
+                  size="x-small"
+                  class="ml-1 text-medium-emphasis"
+              /></a>
+            </v-card-title>
+            <template v-if="!('fetchError' in pool)" #append>
+              <v-chip
+                size="small"
+                variant="tonal"
+                prepend-icon="lucide:gauge"
+                :title="`${$n(pool.hashrateHS)} H/s`"
+                >{{ formatMetric(pool.hashrateHS) }}H/s</v-chip
+              >
+            </template>
+          </v-card-item>
+
+          <v-card-text v-if="'fetchError' in pool">
+            <v-alert
+              type="error"
+              variant="tonal"
+              density="compact"
+              :text="formatServerError(pool.fetchError)"
+            />
+          </v-card-text>
+          <template v-else>
+            <v-card-text class="pt-1">
+              <div class="text-label-medium text-medium-emphasis">
+                {{ $t("estimatedRevenue") }}
+              </div>
+              <div class="revenue text-primary">
+                <BitcoinAmount
+                  :sats="poolRevenue[pool.id]!.revenue"
+                  :unit="units"
+                />
+                <span class="text-body-medium text-medium-emphasis">
+                  / {{ $t("perDay") }}</span
+                >
+              </div>
+              <v-progress-linear
+                :model-value="
+                  bestRevenue
+                    ? (poolRevenue[pool.id]!.revenue / bestRevenue) * 100
+                    : 0
                 "
-                :code="`{
+                color="primary"
+                bg-color="primary"
+                rounded
+                height="6"
+                class="my-3"
+              />
+              <div class="d-flex flex-wrap ga-2">
+                <v-chip size="small" variant="outlined" label>{{
+                  $t("math.fee", [
+                    `${$n(pool.feeMultiple * 100, NUMBER_FORMAT)}%`,
+                  ])
+                }}</v-chip>
+                <v-chip
+                  v-if="pool.stratumSkimMultiple"
+                  size="small"
+                  variant="tonal"
+                  color="success"
+                  label
+                  :title="$t('math.skimExplanation')"
+                  >{{
+                    $t("math.stratumSkim", [
+                      `${$n(pool.stratumSkimMultiple * 100, NUMBER_FORMAT)}%`,
+                    ])
+                  }}</v-chip
+                >
+              </div>
+            </v-card-text>
+
+            <v-expansion-panels
+              variant="accordion"
+              flat
+              static
+              multiple
+              class="pool-panels"
+            >
+              <v-expansion-panel>
+                <v-expansion-panel-title>
+                  <v-icon
+                    icon="lucide:calculator"
+                    size="small"
+                    class="mr-3 text-medium-emphasis"
+                  />{{ $t("math.title") }}
+                </v-expansion-panel-title>
+                <v-expansion-panel-text>
+                  <div class="math-info-body">
+                    <span
+                      ><i18n-t keypath="math.blocksPerDay"
+                        ><span class="value">{{
+                          $n(poolRevenue[pool.id]!.blocksPerDay, NUMBER_FORMAT)
+                        }}</span></i18n-t
+                      ></span
+                    >
+                    <span
+                      ><span class="value">&lowast; </span>
+                      <i18n-t keypath="math.poolShare"
+                        ><span class="value"
+                          >{{ formatMetric(yourHashrateCalculated) }}H/s /
+                          {{
+                            formatMetric(
+                              pool.hashrateHS + yourHashrateCalculated,
+                            )
+                          }}H/s &asymp;
+                          {{
+                            $n(
+                              (yourHashrateCalculated /
+                                (pool.hashrateHS + yourHashrateCalculated)) *
+                                100,
+                              NUMBER_FORMAT,
+                            )
+                          }}%</span
+                        ></i18n-t
+                      ></span
+                    >
+                    <span
+                      ><span class="value">&lowast; (</span>
+                      <i18n-t keypath="math.blockSubsidy"
+                        ><span class="value"
+                          ><BitcoinAmount
+                            :sats="poolRevenue[pool.id]!.blockSubsidy"
+                            :unit="units" /></span></i18n-t
+                      ><span class="value"> + </span
+                      ><i18n-t keypath="math.blockFee"
+                        ><span class="value"
+                          ><BitcoinAmount
+                            :sats="averageBlockFee"
+                            :unit="units" /></span></i18n-t
+                      ><span class="value">)</span></span
+                    >
+                    <span
+                      v-if="pool.feeMultiple && pool.stratumSkimMultiple"
+                      class="value"
+                      >&lowast; (
+                    </span>
+                    <span
+                      v-if="pool.feeMultiple"
+                      :class="{
+                        negative: true,
+                        grouped: pool.stratumSkimMultiple,
+                      }"
+                      ><span v-if="!pool.stratumSkimMultiple" class="value"
+                        >&lowast; (</span
+                      ><span class="value"
+                        >{{ $n(100, NUMBER_FORMAT) }}% &minus;
+                      </span>
+                      <i18n-t keypath="math.fee"
+                        ><span class="value"
+                          >{{
+                            $n(pool.feeMultiple * 100, NUMBER_FORMAT)
+                          }}%</span
+                        ></i18n-t
+                      ><span v-if="!pool.stratumSkimMultiple" class="value"
+                        >)</span
+                      ></span
+                    >
+                    <span
+                      v-if="pool.stratumSkimMultiple"
+                      :class="{ positive: true, grouped: pool.feeMultiple }"
+                      ><span v-if="!pool.feeMultiple" class="value"
+                        >&lowast; ({{ $n(100, NUMBER_FORMAT) }}% + </span
+                      ><span v-else>+ </span>
+                      <i18n-t keypath="math.stratumHashrate"
+                        ><span class="value"
+                          >{{
+                            $n(
+                              pool.stratumHashrateMultiple * 100,
+                              NUMBER_FORMAT,
+                            )
+                          }}%</span
+                        ></i18n-t
+                      ><span class="value"> &lowast; </span
+                      ><i18n-t
+                        tag="span"
+                        class="explainer"
+                        :title="$t('math.skimExplanation')"
+                        keypath="math.stratumSkim"
+                        ><span class="value"
+                          >{{
+                            $n(pool.stratumSkimMultiple * 100, NUMBER_FORMAT)
+                          }}%</span
+                        ></i18n-t
+                      ><span v-if="!pool.feeMultiple" class="value"
+                        >)</span
+                      ></span
+                    >
+                    <span
+                      v-if="pool.feeMultiple && pool.stratumSkimMultiple"
+                      class="value"
+                      >)</span
+                    >
+                    <v-divider class="my-2" />
+                    <span class="font-weight-bold"
+                      >=
+                      <BitcoinAmount
+                        :sats="poolRevenue[pool.id]!.revenue"
+                        :unit="units"
+                      />
+                      / {{ $t("perDay") }}</span
+                    >
+                  </div>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <v-expansion-panel eager>
+                <v-expansion-panel-title>
+                  <v-icon
+                    icon="lucide:plug"
+                    size="small"
+                    class="mr-3 text-medium-emphasis"
+                  />{{ $t("connectInfo.title") }}
+                </v-expansion-panel-title>
+                <v-expansion-panel-text>
+                  <v-select
+                    v-model="poolDifficulty[pool.id].value"
+                    :label="$t('connectInfo.difficulty')"
+                    :items="
+                      Object.keys(pool.connectInfo.poolPortsByDifficulty).map(
+                        Number,
+                      )
+                    "
+                    density="compact"
+                    class="mb-3"
+                  />
+                  <v-alert
+                    v-if="pool.connectInfo.requireV3"
+                    type="warning"
+                    variant="tonal"
+                    density="compact"
+                    class="mb-3 text-body-medium"
+                    ><i18n-t keypath="connectInfo.protocolV3Warning"
+                      ><template #protocolV3
+                        ><code>protocol_v3</code></template
+                      ></i18n-t
+                    ></v-alert
+                  >
+                  <VCodeBlock
+                    class="code-block"
+                    highlightjs
+                    lang="json5"
+                    :theme="
+                      theme.current.value.dark
+                        ? 'base16-google-dark'
+                        : 'base16-google-light'
+                    "
+                    :code="`{
   &quot;datum&quot;: {
     &quot;pool_host&quot;: ${JSON.stringify(pool.connectInfo.poolHost)},
     &quot;pool_port&quot;: ${
@@ -359,95 +526,116 @@ watch(data, () => {
 ${pool.connectInfo.requireV3 ? `,\n    &quot;protocol_v3&quot;: true // ${$t('connectInfo.protocolV3Comment')}` : ''}
   }
 }`"
-              />
-            </div>
-          </details>
-        </template>
-      </div>
-    </div>
-    <div v-else>{{ $t("loading") }}</div>
-  </div>
+                  />
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </template>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row v-else>
+      <v-col
+        v-for="n in BITCOIN_POOL_IDS.length"
+        :key="n"
+        cols="12"
+        md="6"
+        lg="4"
+      >
+        <v-card variant="flat" border>
+          <!-- VSkeletonLoader sets its own label as `ariaLabel`, which SSR renders as an invalid `arialabel` attribute -->
+          <v-skeleton-loader
+            type="heading, subtitle, text, chip"
+            :aria-label="$t('$vuetify.loading')"
+          />
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style lang="css" scoped>
-.error {
-  color: red;
+.prefix-select {
+  flex: 0 0 7.5rem;
 }
 
-.warning {
-  color: orange;
+.sort-toggle {
+  height: 48px;
+  flex-shrink: 0;
 }
 
-.pool-table {
-  margin-top: 0.5rem;
-  display: grid;
-  grid-template-columns: max-content;
-  row-gap: 1rem;
+.pool-card {
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 
-  .pool-row {
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    border: 3px solid orange;
-    border-radius: 10px;
-
-    .math-info-body {
-      padding-left: 1rem;
-      display: flex;
-      flex-direction: column;
-      font-size: smaller;
-
-      .value {
-        font-size: larger;
-      }
-
-      .grouped {
-        padding-left: 1rem;
-      }
-
-      .positive {
-        color: green;
-      }
-
-      .negative {
-        color: red;
-      }
-    }
-
-    .connect-info {
-      max-width: 50vw;
-
-      .connect-info-body {
-        padding-left: 1rem;
-      }
-    }
+  &:hover {
+    border-color: rgba(var(--v-theme-primary), 0.6) !important;
+    box-shadow: 0 4px 20px rgba(var(--v-theme-primary), 0.08);
   }
+}
+
+.pool-link {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: rgb(var(--v-theme-primary));
+  }
+}
+
+.revenue {
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.pool-panels {
+  border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 0;
+
+  :deep(.v-expansion-panel) {
+    background: transparent;
+  }
+}
+
+.math-info-body {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.15rem;
+  font-size: 0.85rem;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+
+  .value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--v-theme-on-surface));
+  }
+
+  .grouped {
+    padding-left: 1rem;
+  }
+
+  .positive,
+  .positive .value {
+    color: rgb(var(--v-theme-success));
+  }
+
+  .negative,
+  .negative .value {
+    color: rgb(var(--v-theme-error));
+  }
+}
+
+.code-block {
+  overflow-x: auto;
+  font-size: 0.8rem;
 }
 
 .explainer {
   text-decoration: underline dotted;
-}
-
-.refresh-button {
-  vertical-align: middle;
-  background-color: transparent;
-  border: none;
-  outline: none;
-  font-size: medium;
-  padding: 0;
-}
-
-.spinning {
-  animation: spin 1.5s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+  cursor: help;
 }
 </style>

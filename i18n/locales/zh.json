@@ -1,4 +1,8 @@
 {
+  "title": "DATUM 矿池",
+  "subtitle": "比较各 DATUM 矿池的预估挖矿收益",
+  "toggleTheme": "切换深色模式",
+  "estimatedRevenue": "预估收益",
   "bitcoinUnits": {
     "btc": "比特币",
     "sat": "聪"
@@ -9,6 +13,12 @@
     "all": "历史至今"
   },
   "allTimeWarning": "使用“@:{'timePeriods.all'}”平均周期时，区块手续费将仅对过去 3 年的数据取平均值（受 mempool.guide 限制）",
+  "controls": {
+    "units": "单位",
+    "averagingPeriod": "平均周期",
+    "sortBy": "排序方式",
+    "refresh": "刷新"
+  },
   "sort": {
     "option": {
       "name": "名称",
@@ -20,8 +30,7 @@
       "desc": "降序"
     }
   },
-  "yourHashrate": "您的算力：{input}",
-  "loading": "加载中...",
+  "yourHashrate": "您的算力",
   "perDay": "天",
   "math": {
     "title": "收益计算表",
@@ -37,7 +46,8 @@
   "connectInfo": {
     "title": "连接信息",
     "protocolV3Warning": "该矿池要求使用 CONVOY 的 DATUM 分支进行连接，或者在使用 RATUM 时启用 {protocolV3} 设置",
-    "protocolV3Comment": "仅在使用 RATUM 时需要"
+    "protocolV3Comment": "仅在使用 RATUM 时需要",
+    "difficulty": "难度"
   },
   "serverError": {
     "statusCode": "状态码：{0}",
