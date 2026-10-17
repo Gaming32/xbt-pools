@@ -38,13 +38,41 @@ const yourHashrateMultiple = useState<MetricPrefix>(
   "yourHashrateMultiple",
   () => "T",
 );
+watch(yourHashrateMultiple, (newMultiple, oldMultiple) => {
+  const trueValue = fromMetric(yourHashrate.value, oldMultiple);
+  const newValue = toMetricWithMultiple(trueValue, newMultiple);
+  yourHashrate.value = newValue;
+});
+
+const poolRevenue = computed(() => {
+  if (!data.value) {
+    return {};
+  }
+  const result: Partial<Record<BitcoinPoolId, ComputedRevenuePerDay>> = {};
+  for (const poolId of BITCOIN_POOL_IDS) {
+    const pool = data.value.pools[poolId];
+    if ("fetchError" in pool) {
+      continue;
+    }
+    result[poolId] = poolRevenuePerDay(pool, {
+      nextBlockHeight: data.value.nextBlockHeight,
+      luckPeriod: averagingPeriod.value,
+      hashrateHS: yourHashrateCalculated.value,
+      blockFee: averageBlockFee.value,
+    });
+  }
+  return result;
+});
+
+type PoolWithId = BitcoinPool & { id: BitcoinPoolId };
+type FetchResultWithId = PoolFetchResult & { id: BitcoinPoolId };
 
 const sortedPools = computed(() => {
-  if (data.value === undefined) {
+  if (!data.value) {
     return [];
   }
 
-  let baseComparator: Comparator<BitcoinPool>;
+  let baseComparator: Comparator<PoolWithId>;
   switch (sortOption.value) {
     case "name":
       baseComparator = (a, b) => a.info.name.localeCompare(b.info.name);
@@ -54,11 +82,11 @@ const sortedPools = computed(() => {
       break;
     case "revenue":
       baseComparator = (a, b) =>
-        poolRevenuePerDay(a).revenue - poolRevenuePerDay(b).revenue;
+        poolRevenue.value[a.id]!.revenue - poolRevenue.value[b.id]!.revenue;
       break;
   }
 
-  let directionComparator: Comparator<BitcoinPool>;
+  let directionComparator: Comparator<PoolWithId>;
   switch (sortDirection.value) {
     case "asc":
       directionComparator = baseComparator;
@@ -68,7 +96,7 @@ const sortedPools = computed(() => {
       break;
   }
 
-  const comparator: Comparator<PoolFetchResult> = (a, b) => {
+  const comparator: Comparator<FetchResultWithId> = (a, b) => {
     const aError = "fetchError" in a;
     const bError = "fetchError" in b;
     if (aError) {
@@ -113,26 +141,6 @@ const yourHashrateCalculated = computed(() =>
     ? fromMetric(yourHashrate.value, yourHashrateMultiple.value)
     : HS_PER_THS,
 );
-
-const poolRevenue = computed(() => {
-  if (!data.value) {
-    return {};
-  }
-  const result: Partial<Record<BitcoinPoolId, ComputedRevenuePerDay>> = {};
-  for (const poolId of BITCOIN_POOL_IDS) {
-    const pool = data.value.pools[poolId];
-    if ("fetchError" in pool) {
-      continue;
-    }
-    result[poolId] = poolRevenuePerDay(pool, {
-      nextBlockHeight: data.value.nextBlockHeight,
-      luckPeriod: averagingPeriod.value,
-      hashrateHS: yourHashrateCalculated.value,
-      blockFee: averageBlockFee.value,
-    });
-  }
-  return result;
-});
 
 const poolDifficulty = Object.fromEntries(
   BITCOIN_POOL_IDS.map((id) => [id, ref()]),

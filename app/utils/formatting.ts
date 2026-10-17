@@ -26,6 +26,10 @@ export function formatMetric(value: number) {
   return `${n(value, NUMBER_FORMAT)} ${METRIC_PREFIXES[prefixIndex]}`;
 }
 
+export function toMetricWithMultiple(value: number, exponent: MetricPrefix) {
+  return value / Math.pow(1000, METRIC_PREFIXES.indexOf(exponent));
+}
+
 export function fromMetric(mantissa: number, exponent: MetricPrefix) {
   return mantissa * Math.pow(1000, METRIC_PREFIXES.indexOf(exponent));
 }
