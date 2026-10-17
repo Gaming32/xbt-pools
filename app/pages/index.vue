@@ -299,7 +299,11 @@ watch(data, () => {
                     }}%</span
                   ></i18n-t
                 ><span class="value"> &lowast; </span
-                ><i18n-t keypath="math.stratumSkim"
+                ><i18n-t
+                  tag="span"
+                  class="explainer"
+                  :title="$t('math.skimExplanation')"
+                  keypath="math.stratumSkim"
                   ><span class="value"
                     >{{
                       $n(pool.stratumSkimMultiple * 100, NUMBER_FORMAT)
@@ -418,6 +422,10 @@ ${pool.connectInfo.requireV3 ? `,\n    &quot;protocol_v3&quot;: true // ${$t('co
       }
     }
   }
+}
+
+.explainer {
+  text-decoration: underline dotted;
 }
 
 .refresh-button {

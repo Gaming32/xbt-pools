@@ -8,7 +8,7 @@
     "1w": "1 week",
     "all": "All time"
   },
-  "yourHashrate": "Your hashrate: {input}",
+  "allTimeWarning": "When using the \"@:{'timePeriods.all'}\" averaging period, block fees will instead be averaged over the last 3 years (mempool.guide limitation)",
   "sort": {
     "option": {
       "name": "Name",
@@ -20,7 +20,7 @@
       "desc": "Desc"
     }
   },
-  "allTimeWarning": "When using the \"@:{'timePeriods.all'}\" averaging period, block fees will instead be averaged over the last 3 years (mempool.guide limitation)",
+  "yourHashrate": "Your hashrate: {input}",
   "loading": "Loading...",
   "perDay": "day",
   "math": {
@@ -31,7 +31,8 @@
     "blockFee": "{0} block fee (average)",
     "fee": "{0} fee",
     "stratumHashrate": "{0} Sv1 hashrate",
-    "stratumSkim": "{0} Sv1 skim/boost/bonus"
+    "stratumSkim": "{0} Sv1 skim/boost/bonus",
+    "skimExplanation": "Percentage of Stratum v1 hashrate given to DATUM miners"
   },
   "connectInfo": {
     "title": "Connection info",

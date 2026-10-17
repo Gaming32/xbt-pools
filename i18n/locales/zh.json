@@ -8,6 +8,7 @@
     "1w": "1周",
     "all": "历史至今"
   },
+  "allTimeWarning": "使用“@:{'timePeriods.all'}”平均周期时，区块手续费将仅对过去 3 年的数据取平均值（受 mempool.guide 限制）",
   "sort": {
     "option": {
       "name": "名称",
@@ -19,8 +20,25 @@
       "desc": "降序"
     }
   },
+  "yourHashrate": "您的算力：{input}",
   "loading": "加载中...",
   "perDay": "天",
+  "math": {
+    "title": "收益计算表",
+    "blocksPerDay": "每日矿池出块 {0}（平均）",
+    "poolShare": "您的矿池算力占比 {0}",
+    "blockSubsidy": "区块奖励 {0}",
+    "blockFee": "区块手续费 {0}（平均）",
+    "fee": "{0} 手续费",
+    "stratumHashrate": "{0} Sv1 算力",
+    "stratumSkim": "{0} Sv1 算力分流/提升/奖励",
+    "skimExplanation": "分配给 DATUM 矿工的 Stratum v1 算力百分比"
+  },
+  "connectInfo": {
+    "title": "连接信息",
+    "protocolV3Warning": "该矿池要求使用 CONVOY 的 DATUM 分支进行连接，或者在使用 RATUM 时启用 {protocolV3} 设置",
+    "protocolV3Comment": "仅在使用 RATUM 时需要"
+  },
   "serverError": {
     "statusCode": "状态码：{0}",
     "generalFetch": "获取数据失败：{0}"
