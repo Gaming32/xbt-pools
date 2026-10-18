@@ -8,8 +8,8 @@
     "sat": "聪"
   },
   "timePeriods": {
-    "24h": "24小时",
-    "1w": "1周",
+    "24h": "24 小时",
+    "1w": "1 周",
     "all": "历史至今"
   },
   "allTimeWarning": "使用“@:{'timePeriods.all'}”平均周期时，区块手续费将仅对过去 3 年的数据取平均值（受 mempool.guide 限制）",
@@ -32,6 +32,11 @@
   },
   "yourHashrate": "您的算力",
   "perDay": "天",
+  "stratumAvailability": {
+    "none": "不允许 Sv1",
+    "enforced_failover": "Sv1 要求近期有 DATUM 连接（收取 {0} 手续费）",
+    "available": "Sv1 收取 {0} 手续费"
+  },
   "math": {
     "title": "收益计算表",
     "blocksPerDay": "每日矿池出块 {0}（平均）",
