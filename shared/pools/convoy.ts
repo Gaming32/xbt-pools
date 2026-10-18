@@ -34,8 +34,12 @@ export async function fetchConvoy(): Promise<PoolFetchResult> {
       info: INFO,
       hashrateHS: hashrate * HS_PER_THS,
       feeMultiple: 0.01,
-      stratumHashrateMultiple: 0, // Unknown; doesn't matter anyway since no skim
-      stratumSkimMultiple: 0,
+      stratum: {
+        hashrateMultiple: 0, // Unknown; doesn't matter anyway since no skim
+        skimMultiple: 0,
+        availability: "available",
+        feeMultiple: 0.02,
+      },
       blocksInPeriod: {
         "24h": blockDates.filter((date) => date >= twentyFourHoursAgo).length,
         "1w": blockDates.filter((date) => date >= oneWeekAgo).length,

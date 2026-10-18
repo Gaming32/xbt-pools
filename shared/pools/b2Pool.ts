@@ -20,6 +20,7 @@ type PoolResponse = {
   pool: {
     ports: Record<number, PoolPort>;
     hosts: string[];
+    poolFeePercent: number;
     poolStats: {
       poolHashrate: number;
     };
@@ -54,9 +55,13 @@ export async function fetchB2Pool(): Promise<PoolFetchResult> {
     return {
       info: INFO,
       hashrateHS: poolResponse.pool.poolStats.poolHashrate,
-      feeMultiple: 0.01,
-      stratumHashrateMultiple: 0, // Unknown; doesn't matter anyway since no skim
-      stratumSkimMultiple: 0,
+      feeMultiple: poolResponse.pool.poolFeePercent / 100,
+      stratum: {
+        hashrateMultiple: 0, // Unknown; doesn't matter anyway since no skim
+        skimMultiple: 0,
+        availability: "available",
+        feeMultiple: poolResponse.pool.poolFeePercent / 100,
+      },
       blocksInPeriod: {
         ...mempoolPool.blockCount,
         "24h": poolResponse.pool.blocksLast24h,

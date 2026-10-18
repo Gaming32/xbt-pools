@@ -19,12 +19,18 @@ export type BitcoinPoolInfo = {
   homepage: string;
 };
 
+export type StratumAvailability = "none" | "enforced_failover" | "available";
+
 export type BitcoinPool = {
   info: BitcoinPoolInfo;
   hashrateHS: number;
   feeMultiple: number;
-  stratumHashrateMultiple: number;
-  stratumSkimMultiple: number;
+  stratum: {
+    hashrateMultiple: number;
+    skimMultiple: number;
+    feeMultiple: number;
+    availability: StratumAvailability;
+  };
   blocksInPeriod: Record<TimePeriod, number>;
   poolStart: number;
   connectInfo: {

@@ -31,8 +31,12 @@ export async function fetchLazarus(): Promise<PoolFetchResult> {
       info: INFO,
       hashrateHS: poolResponse.pool_hr_ghs * HS_PER_GHS,
       feeMultiple: poolResponse.fees.datum_percent / 1000,
-      stratumHashrateMultiple: poolResponse.stratum_hr_percent / 100,
-      stratumSkimMultiple: poolResponse.fees.datum_rebate_percent / 100,
+      stratum: {
+        hashrateMultiple: poolResponse.stratum_hr_percent / 100,
+        skimMultiple: poolResponse.fees.datum_rebate_percent / 100,
+        availability: "available",
+        feeMultiple: 1,
+      },
       blocksInPeriod: {
         ...mempoolPool.blockCount,
         all: poolResponse.blocks_found,

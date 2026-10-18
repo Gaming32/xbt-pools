@@ -32,6 +32,11 @@
   },
   "yourHashrate": "Your hashrate",
   "perDay": "day",
+  "stratumAvailability": {
+    "none": "Sv1 not allowed",
+    "enforced_failover": "Sv1 enforces recent DATUM connection (takes {0} fee)",
+    "available": "Sv1 takes {0} fee"
+  },
   "math": {
     "title": "Revenue math",
     "blocksPerDay": "{0} pool blocks per day (average)",

@@ -32,9 +32,13 @@ export async function fetchBlockvase(): Promise<PoolFetchResult> {
       info: INFO,
       hashrateHS: poolResponse.nethash.pool_hs,
       feeMultiple: poolResponse.pool.fee_percent / 100,
-      stratumHashrateMultiple:
-        poolResponse.nethash.sv1_hs / poolResponse.nethash.pool_hs,
-      stratumSkimMultiple: 0,
+      stratum: {
+        hashrateMultiple:
+          poolResponse.nethash.sv1_hs / poolResponse.nethash.pool_hs,
+        skimMultiple: 0,
+        availability: "none",
+        feeMultiple: poolResponse.pool.fee_percent / 100,
+      },
       blocksInPeriod: {
         ...mempoolPool.blockCount,
         all: poolResponse.status.blocks_found,

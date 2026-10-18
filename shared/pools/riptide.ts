@@ -35,9 +35,13 @@ export async function fetchRiptide(): Promise<PoolFetchResult> {
       info: INFO,
       hashrateHS: statsResponse.hashrate_hs,
       feeMultiple: statsResponse.fee_bps / MULTIPLE_PER_BPS,
-      stratumHashrateMultiple: statsResponse.sv1_fee_pool_pct / 100,
-      stratumSkimMultiple:
-        (statsResponse.local_work_fee_bps / MULTIPLE_PER_BPS) * 0.5,
+      stratum: {
+        hashrateMultiple: statsResponse.sv1_fee_pool_pct / 100,
+        skimMultiple:
+          (statsResponse.local_work_fee_bps / MULTIPLE_PER_BPS) * 0.5,
+        availability: "enforced_failover",
+        feeMultiple: statsResponse.local_work_fee_bps / MULTIPLE_PER_BPS,
+      },
       blocksInPeriod: {
         "24h": statsResponse.blocks_last_24h,
         "1w": statsResponse.blocks_last_7d,

@@ -328,25 +328,46 @@ const bestRevenue = computed(() =>
                 height="6"
                 class="my-3"
               />
-              <div class="d-flex flex-wrap ga-2">
-                <v-chip size="small" variant="outlined" label>{{
-                  $t("math.fee", [
-                    `${$n(pool.feeMultiple * 100, NUMBER_FORMAT)}%`,
-                  ])
-                }}</v-chip>
-                <v-chip
-                  v-if="pool.stratumSkimMultiple"
-                  size="small"
-                  variant="tonal"
-                  color="success"
-                  label
-                  :title="$t('math.skimExplanation')"
-                  >{{
-                    $t("math.stratumSkim", [
-                      `${$n(pool.stratumSkimMultiple * 100, NUMBER_FORMAT)}%`,
+              <div class="d-flex flex-column ga-2">
+                <div class="d-flex flex-wrap ga-2">
+                  <v-chip size="small" variant="outlined" label>{{
+                    $t("math.fee", [
+                      `${$n(pool.feeMultiple * 100, NUMBER_FORMAT)}%`,
                     ])
-                  }}</v-chip
-                >
+                  }}</v-chip>
+                  <v-chip
+                    v-if="pool.stratum.skimMultiple"
+                    size="small"
+                    variant="tonal"
+                    color="success"
+                    label
+                    :title="$t('math.skimExplanation')"
+                    >{{
+                      $t("math.stratumSkim", [
+                        `${$n(pool.stratum.skimMultiple * 100, NUMBER_FORMAT)}%`,
+                      ])
+                    }}</v-chip
+                  >
+                </div>
+                <div class="d-flex flex-wrap ga-2">
+                  <v-chip
+                    size="small"
+                    variant="tonal"
+                    label
+                    :color="
+                      pool.stratum.availability === 'none'
+                        ? 'success'
+                        : pool.stratum.availability === 'enforced_failover'
+                          ? 'warning'
+                          : 'error'
+                    "
+                    >{{
+                      $t(`stratumAvailability.${pool.stratum.availability}`, [
+                        $n(pool.stratum.feeMultiple * 100, NUMBER_FORMAT) + "%",
+                      ])
+                    }}</v-chip
+                  >
+                </div>
               </div>
             </v-card-text>
 
@@ -411,7 +432,7 @@ const bestRevenue = computed(() =>
                       ><span class="value">)</span></span
                     >
                     <span
-                      v-if="pool.feeMultiple && pool.stratumSkimMultiple"
+                      v-if="pool.feeMultiple && pool.stratum.skimMultiple"
                       class="value"
                       >&lowast; (
                     </span>
@@ -419,9 +440,9 @@ const bestRevenue = computed(() =>
                       v-if="pool.feeMultiple"
                       :class="{
                         negative: true,
-                        grouped: pool.stratumSkimMultiple,
+                        grouped: pool.stratum.skimMultiple,
                       }"
-                      ><span v-if="!pool.stratumSkimMultiple" class="value"
+                      ><span v-if="!pool.stratum.skimMultiple" class="value"
                         >&lowast; (</span
                       ><span class="value"
                         >{{ $n(100, NUMBER_FORMAT) }}% &minus;
@@ -432,12 +453,12 @@ const bestRevenue = computed(() =>
                             $n(pool.feeMultiple * 100, NUMBER_FORMAT)
                           }}%</span
                         ></i18n-t
-                      ><span v-if="!pool.stratumSkimMultiple" class="value"
+                      ><span v-if="!pool.stratum.skimMultiple" class="value"
                         >)</span
                       ></span
                     >
                     <span
-                      v-if="pool.stratumSkimMultiple"
+                      v-if="pool.stratum.skimMultiple"
                       :class="{ positive: true, grouped: pool.feeMultiple }"
                       ><span v-if="!pool.feeMultiple" class="value"
                         >&lowast; ({{ $n(100, NUMBER_FORMAT) }}% + </span
@@ -446,7 +467,7 @@ const bestRevenue = computed(() =>
                         ><span class="value"
                           >{{
                             $n(
-                              pool.stratumHashrateMultiple * 100,
+                              pool.stratum.hashrateMultiple * 100,
                               NUMBER_FORMAT,
                             )
                           }}%</span
@@ -459,7 +480,7 @@ const bestRevenue = computed(() =>
                         keypath="math.stratumSkim"
                         ><span class="value"
                           >{{
-                            $n(pool.stratumSkimMultiple * 100, NUMBER_FORMAT)
+                            $n(pool.stratum.skimMultiple * 100, NUMBER_FORMAT)
                           }}%</span
                         ></i18n-t
                       ><span v-if="!pool.feeMultiple" class="value"
@@ -467,7 +488,7 @@ const bestRevenue = computed(() =>
                       ></span
                     >
                     <span
-                      v-if="pool.feeMultiple && pool.stratumSkimMultiple"
+                      v-if="pool.feeMultiple && pool.stratum.skimMultiple"
                       class="value"
                       >)</span
                     >

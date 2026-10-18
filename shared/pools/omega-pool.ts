@@ -31,8 +31,12 @@ export async function fetchOmegaPool(): Promise<PoolFetchResult> {
       info: INFO,
       hashrateHS: statsResponse.hashrate.pool_hs,
       feeMultiple: statsResponse.pool.fee_bps / MULTIPLE_PER_BPS,
-      stratumHashrateMultiple: 0,
-      stratumSkimMultiple: 0,
+      stratum: {
+        hashrateMultiple: 0,
+        skimMultiple: 0,
+        availability: "none",
+        feeMultiple: statsResponse.pool.fee_bps / MULTIPLE_PER_BPS,
+      },
       blocksInPeriod: {
         ...mempoolPool.blockCount,
         all: statsResponse.blocks.found,

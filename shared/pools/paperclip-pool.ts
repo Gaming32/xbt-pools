@@ -6,6 +6,7 @@ type StatusResponse = {
   stats: {
     pool: {
       incentives: {
+        stratum_fee_bps: number;
         datum_bonus_bps: number;
       };
       fee_bps: number;
@@ -40,11 +41,18 @@ export async function fetchPaperclipPool(): Promise<PoolFetchResult> {
       info: INFO,
       hashrateHS: statusResponse.stats.hashrate.pool_hs,
       feeMultiple: statusResponse.stats.pool.fee_bps / MULTIPLE_PER_BPS,
-      stratumHashrateMultiple:
-        statusResponse.stats.hashrate.stratum_hs /
-        statusResponse.stats.hashrate.pool_hs,
-      stratumSkimMultiple:
-        statusResponse.stats.pool.incentives.datum_bonus_bps / MULTIPLE_PER_BPS,
+      stratum: {
+        hashrateMultiple:
+          statusResponse.stats.hashrate.stratum_hs /
+          statusResponse.stats.hashrate.pool_hs,
+        skimMultiple:
+          statusResponse.stats.pool.incentives.datum_bonus_bps /
+          MULTIPLE_PER_BPS,
+        availability: "available",
+        feeMultiple:
+          statusResponse.stats.pool.incentives.stratum_fee_bps /
+          MULTIPLE_PER_BPS,
+      },
       blocksInPeriod: {
         ...mempoolPool.blockCount,
         all: statusResponse.stats.mining_odds.blocks_found,

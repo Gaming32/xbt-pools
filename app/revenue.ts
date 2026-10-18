@@ -30,7 +30,7 @@ export function poolRevenuePerDay(
   const baseBlockReward = subsidyFromHeight(nextBlockHeight) + blockFee;
   const datumBlockReward =
     baseBlockReward * (1 - pool.feeMultiple) +
-    baseBlockReward * pool.stratumHashrateMultiple * pool.stratumSkimMultiple;
+    baseBlockReward * pool.stratum.hashrateMultiple * pool.stratum.skimMultiple;
 
   const poolShare = hashrateHS / (pool.hashrateHS + hashrateHS);
   return {
