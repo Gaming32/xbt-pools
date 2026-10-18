@@ -18,27 +18,55 @@ useHead({
   ],
 });
 
-const themeCookie = useCookie<"light" | "dark" | null>("theme", {
-  maxAge: 60 * 60 * 24 * 365,
-});
-theme.change(themeCookie.value ?? "light");
-
 const APP_BAR_HEIGHT = 64;
 const mounted = ref(false);
 
+type ThemeName = "light" | "dark";
+
+const themeCookie = useCookie<ThemeName | null>("theme", {
+  maxAge: 60 * 60 * 24 * 365,
+});
+const systemThemeCookie = useCookie<ThemeName | null>("system-theme", {
+  maxAge: 60 * 60 * 24 * 365,
+});
+
+const initialTheme = useState<ThemeName>("initial-theme", () => {
+  const hint = useRequestHeaders(["sec-ch-prefers-color-scheme"])[
+    "sec-ch-prefers-color-scheme"
+  ]?.replaceAll('"', "");
+  const hintedTheme = hint === "light" || hint === "dark" ? hint : null;
+  return themeCookie.value ?? hintedTheme ?? systemThemeCookie.value ?? "dark";
+});
+theme.change(initialTheme.value);
+
+const darkQuery = import.meta.client
+  ? window.matchMedia("(prefers-color-scheme: dark)")
+  : null;
+
+function getSystemTheme(): ThemeName {
+  return darkQuery?.matches ? "dark" : "light";
+}
+
+function saveSystemTheme() {
+  systemThemeCookie.value = getSystemTheme();
+}
+
 onMounted(() => {
   mounted.value = true;
+  saveSystemTheme();
+  darkQuery?.addEventListener("change", saveSystemTheme);
   if (!themeCookie.value) {
     theme.change("system");
   }
 });
 
+onUnmounted(() => {
+  darkQuery?.removeEventListener("change", saveSystemTheme);
+});
+
 async function toggleTheme(event: MouseEvent) {
   const newTheme = theme.current.value.dark ? "light" : "dark";
-  const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-  const followSystem = newTheme === systemTheme;
+  const followSystem = newTheme === getSystemTheme();
   themeCookie.value = followSystem ? null : newTheme;
 
   const root = document.documentElement;
