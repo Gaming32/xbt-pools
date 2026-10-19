@@ -32,6 +32,17 @@ const units = useState<BitcoinUnit>("units", () => "btc");
 
 const sortOption = queryUnionRef("sort", SORT_OPTIONS, "revenue");
 const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "desc");
+watch(sortOption, (newOption, oldOption) => {
+  const oldIsName = oldOption === "name";
+  const newIsName = newOption === "name";
+  if (oldIsName != newIsName) {
+    if (sortDirection.value === "asc") {
+      sortDirection.value = "desc";
+    } else {
+      sortDirection.value = "asc";
+    }
+  }
+});
 
 const yourHashrate = useState("yourHashrate", () => 1);
 const yourHashrateMultiple = useState<MetricPrefix>(
