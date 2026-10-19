@@ -39,5 +39,5 @@ export function fetchBlockFees(
 
 function fetchMempool<T>(route: string): Promise<T> {
   const config = useRuntimeConfig();
-  return $fetch(`${config.public.mempoolUrl}/api/${route}`);
+  return $fetch<T, string>(`${config.public.mempoolUrl}/api/${route}`);
 }

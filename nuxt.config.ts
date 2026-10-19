@@ -77,9 +77,6 @@ export default defineNuxtConfig({
   i18n: {
     defaultLocale: "en",
     strategy: "no_prefix",
-    experimental: {
-      typedOptionsAndMessages: "default",
-    },
     baseUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : "http://localhost:3000",
@@ -143,17 +140,6 @@ export default defineNuxtConfig({
           color: "primary",
         },
       },
-    },
-  },
-
-  typescript: {
-    sharedTsConfig: {
-      compilerOptions: {
-        paths: {
-          "#i18n": ["../.nuxt/types/i18n-messages.d.ts"],
-        },
-      },
-      include: ["**/*", "../.nuxt/types/i18n-messages.d.ts"],
     },
   },
 });
