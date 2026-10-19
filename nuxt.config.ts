@@ -18,6 +18,14 @@ export default defineNuxtConfig({
     },
   },
 
+  css: ["vuetify/styles/utilities"],
+
+  postcss: {
+    plugins: {
+      "~~/postcss/trim-vuetify-utilities": {},
+    },
+  },
+
   features: {
     inlineStyles: false,
   },
@@ -92,6 +100,9 @@ export default defineNuxtConfig({
   vuetify: {
     moduleOptions: {
       prefixComposables: ["useLayout"],
+      // Utilities are imported in `css` above, so they can be trimmed by postcss/trim-vuetify-utilities.ts.
+      // The color palette classes (e.g. `text-red`) are unused, so use CSS colors for anything outside the theme.
+      styles: { utilities: false, colors: false },
     },
     vuetifyOptions: {
       // Configured in app/plugins/vuetify-icons.ts
