@@ -357,7 +357,8 @@ const bestRevenue = computed(() =>
                     :color="
                       pool.stratum.availability === 'none'
                         ? 'success'
-                        : pool.stratum.availability === 'enforced_failover'
+                        : pool.stratum.availability === 'enforced_failover' ||
+                            pool.stratum.feeMultiple === 1
                           ? 'warning'
                           : 'error'
                     "
