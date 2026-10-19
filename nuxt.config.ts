@@ -77,6 +77,9 @@ export default defineNuxtConfig({
   ],
 
   vuetify: {
+    moduleOptions: {
+      prefixComposables: ["useLayout"],
+    },
     vuetifyOptions: {
       // Configured in app/plugins/vuetify-icons.ts
       icons: false,
