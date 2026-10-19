@@ -38,11 +38,6 @@ const yourHashrateMultiple = useState<MetricPrefix>(
   "yourHashrateMultiple",
   () => "T",
 );
-watch(yourHashrateMultiple, (newMultiple, oldMultiple) => {
-  const trueValue = fromMetric(yourHashrate.value, oldMultiple);
-  const newValue = toMetricWithMultiple(trueValue, newMultiple);
-  yourHashrate.value = newValue;
-});
 
 const poolRevenue = computed(() => {
   if (!data.value) {
