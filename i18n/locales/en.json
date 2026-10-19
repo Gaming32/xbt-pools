@@ -2,7 +2,6 @@
   "title": "DATUM Pools",
   "subtitle": "Compare estimated mining revenue across DATUM pools",
   "toggleTheme": "Toggle dark mode",
-  "estimatedRevenue": "Estimated revenue",
   "bitcoinUnits": {
     "btc": "Bitcoin",
     "sat": "Satoshis"
@@ -26,7 +25,7 @@
   "sort": {
     "option": {
       "name": "Name",
-      "revenue": "Revenue",
+      "estimatedRevenue": "Estimated revenue",
       "hashrate": "Hashrate"
     },
     "direction": {

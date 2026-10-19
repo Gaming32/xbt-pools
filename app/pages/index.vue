@@ -19,7 +19,7 @@ import { poolRevenuePerDay, type ComputedRevenuePerDay } from "~/revenue";
 const theme = useTheme();
 const { locale } = useI18n();
 
-const SORT_OPTIONS = ["name", "revenue", "hashrate"] as const;
+const SORT_OPTIONS = ["name", "estimatedRevenue", "hashrate"] as const;
 const SORT_DIRECTIONS = ["asc", "desc"] as const;
 
 const { data, status, refresh, pending } = await useLazyAsyncData(
@@ -40,7 +40,7 @@ watch(status, (newStatus) => {
 const averagingPeriod = useState<TimePeriod>("timePeriod", () => "1w");
 const units = useState<BitcoinUnit>("units", () => "btc");
 
-const sortOption = queryUnionRef("sort", SORT_OPTIONS, "revenue");
+const sortOption = queryUnionRef("sort", SORT_OPTIONS, "estimatedRevenue");
 const sortDirection = queryUnionRef("dir", SORT_DIRECTIONS, "desc");
 watch(sortOption, (newOption, oldOption) => {
   const oldIsName = oldOption === "name";
@@ -99,7 +99,7 @@ const sortedPools = computed(() => {
     case "hashrate":
       baseComparator = (a, b) => a.hashrateHS - b.hashrateHS;
       break;
-    case "revenue":
+    case "estimatedRevenue":
       baseComparator = (a, b) =>
         poolRevenue.value[a.id]!.revenue - poolRevenue.value[b.id]!.revenue;
       break;
@@ -345,7 +345,7 @@ const bestRevenue = computed(() =>
             <template v-else>
               <v-card-text class="pt-1">
                 <div class="text-label-medium text-medium-emphasis">
-                  {{ $t("estimatedRevenue") }}
+                  {{ $t("sort.option.estimatedRevenue") }}
                 </div>
                 <div class="revenue text-primary">
                   <BitcoinAmount
