@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { locale, locales, setLocale } = useI18n();
 const theme = useTheme();
+const config = useRuntimeConfig();
 
 useHeadSafe(useLocaleHead());
 useHead({
@@ -134,6 +135,27 @@ async function toggleTheme(event: MouseEvent) {
     >
       <NuxtPage />
     </v-main>
+    <v-footer
+      class="d-flex align-center justify-center flex-wrap flex-grow-1 flex-column py-3"
+    >
+      <div>&copy;{{ config.public.buildYear }} Taki</div>
+      <div v-if="config.public.git.commit">
+        Commit
+        <a
+          v-if="config.public.git.remote"
+          :href="`${config.public.git.remote}/commit/${config.public.git.commit}`"
+          >{{ config.public.git.commit }}</a
+        ><template v-else>{{ config.public.git.commit }}</template>
+        <template v-if="config.public.git.dirty"> (DIRTY)</template>
+      </div>
+      <div v-if="config.public.git.pullRequest">
+        Pull request
+        <a
+          :href="`${config.public.git.remote}/pull/${config.public.git.pullRequest}`"
+          >#{{ config.public.git.pullRequest }}</a
+        >
+      </div>
+    </v-footer>
   </v-app>
 </template>
 
