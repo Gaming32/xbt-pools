@@ -248,14 +248,15 @@ const bestRevenue = computed(() =>
           </v-col>
         </v-row>
         <v-expand-transition>
-          <v-alert
-            v-if="averagingPeriod === 'all'"
-            type="warning"
-            variant="tonal"
-            density="compact"
-            class="mt-4"
-            :text="$t('allTimeWarning')"
-          />
+          <div v-if="averagingPeriod === 'all'">
+            <v-alert
+              type="warning"
+              variant="tonal"
+              density="compact"
+              class="mt-4"
+              :text="$t('allTimeWarning')"
+            />
+          </div>
         </v-expand-transition>
       </v-card-text>
     </v-card>
