@@ -44,11 +44,14 @@ watch(sortOption, (newOption, oldOption) => {
   }
 });
 
-const yourHashrate = useState("yourHashrate", () => 1);
-const yourHashrateMultiple = useState<MetricPrefix>(
-  "yourHashrateMultiple",
-  () => "T",
-);
+const yourHashrate = useCookie("your-hashrate", {
+  default: () => 1,
+  maxAge: COOKIE_EXPIRY,
+});
+const yourHashrateMultiple = useCookie<MetricPrefix>("your-hashrate-multiple", {
+  default: () => "T",
+  maxAge: COOKIE_EXPIRY,
+});
 
 const poolRevenue = computed(() => {
   if (!data.value) {

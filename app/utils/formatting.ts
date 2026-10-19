@@ -19,7 +19,7 @@ export type MetricPrefix = (typeof METRIC_PREFIXES)[number];
 export function formatMetric(value: number) {
   const { n } = useI18n();
   let prefixIndex = 0;
-  while (prefixIndex < METRIC_PREFIXES.length - 1 && value >= 2000) {
+  while (prefixIndex < METRIC_PREFIXES.length - 1 && value >= 1000) {
     prefixIndex++;
     value /= 1000;
   }

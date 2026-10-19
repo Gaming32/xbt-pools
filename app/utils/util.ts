@@ -23,6 +23,8 @@ export type FlatJsonObjectPaths<
 export type TranslationJsonObjects<RequiredFields extends string = string> =
   FlatJsonObjectPaths<DefaultLocaleMessageSchema, RequiredFields>;
 
+export const COOKIE_EXPIRY = 60 * 60 * 24 * 365;
+
 export function queryUnionRef<A extends readonly string[]>(
   key: string,
   options: A,

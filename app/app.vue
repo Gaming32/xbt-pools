@@ -25,10 +25,10 @@ const mounted = ref(false);
 type ThemeName = "light" | "dark";
 
 const themeCookie = useCookie<ThemeName | null>("theme", {
-  maxAge: 60 * 60 * 24 * 365,
+  maxAge: COOKIE_EXPIRY,
 });
 const systemThemeCookie = useCookie<ThemeName | null>("system-theme", {
-  maxAge: 60 * 60 * 24 * 365,
+  maxAge: COOKIE_EXPIRY,
 });
 
 const initialTheme = useState<ThemeName>("initial-theme", () => {
