@@ -13,6 +13,10 @@
     "all": "All time"
   },
   "allTimeWarning": "When using the \"@:{'timePeriods.all'}\" averaging period, block fees will instead be averaged over the last 3 years (mempool.guide limitation)",
+  "lastRefreshed": {
+    "body": "Refreshed {0}",
+    "justNow": "just now"
+  },
   "controls": {
     "units": "Units",
     "averagingPeriod": "Averaging period",

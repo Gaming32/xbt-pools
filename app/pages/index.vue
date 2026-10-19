@@ -17,15 +17,25 @@ import { VCodeBlock } from "@wdns/vue-code-block";
 import { poolRevenuePerDay, type ComputedRevenuePerDay } from "~/revenue";
 
 const theme = useTheme();
+const { locale } = useI18n();
 
 const SORT_OPTIONS = ["name", "revenue", "hashrate"] as const;
 const SORT_DIRECTIONS = ["asc", "desc"] as const;
 
-const { data, refresh, pending } = await useLazyAsyncData(
+const { data, status, refresh, pending } = await useLazyAsyncData(
   "homeData",
   fetchAllData,
   { server: false },
 );
+const lastRefreshed = ref<Date>();
+const refreshedJustNow = ref(false);
+watch(status, (newStatus) => {
+  if (newStatus === "success") {
+    lastRefreshed.value = new Date();
+    refreshedJustNow.value = true;
+    setTimeout(() => (refreshedJustNow.value = false), 2000);
+  }
+});
 
 const averagingPeriod = useState<TimePeriod>("timePeriod", () => "1w");
 const units = useState<BitcoinUnit>("units", () => "btc");
@@ -256,6 +266,25 @@ const bestRevenue = computed(() =>
             </div>
           </v-col>
         </v-row>
+        <v-expand-transition>
+          <div
+            v-if="lastRefreshed"
+            class="d-flex align-center justify-end ga-1 mt-2 text-body-small text-medium-emphasis"
+          >
+            <v-icon icon="lucide:clock" size="x-small" />
+            <i18n-t keypath="lastRefreshed.body"
+              ><span v-if="refreshedJustNow">{{
+                $t("lastRefreshed.justNow")
+              }}</span
+              ><NuxtTime
+                v-else
+                class="text-tabular"
+                relative
+                :locale="locale"
+                :datetime="lastRefreshed"
+            /></i18n-t>
+          </div>
+        </v-expand-transition>
         <v-expand-transition>
           <div v-if="averagingPeriod === 'all'">
             <v-alert

@@ -179,4 +179,8 @@ code,
 pre {
   font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 }
+
+.text-tabular {
+  font-variant-numeric: tabular-nums;
+}
 </style>
