@@ -141,18 +141,21 @@ async function toggleTheme(event: MouseEvent) {
       <div>&copy;{{ config.public.buildYear }} Taki</div>
       <div v-if="config.public.git.commit">
         Commit
-        <a
-          v-if="config.public.git.remote"
-          :href="`${config.public.git.remote}/commit/${config.public.git.commit}`"
-          >{{ config.public.git.commit }}</a
-        ><template v-else>{{ config.public.git.commit }}</template>
+        <component
+          :is="config.public.git.remote ? 'a' : 'span'"
+          :href="`${config.public.git.remote}/tree/${config.public.git.commit}`"
+          target="_blank"
+          >{{ config.public.git.commit.substring(0, 7) }}</component
+        >
         <template v-if="config.public.git.dirty"> (DIRTY)</template>
       </div>
       <div v-if="config.public.git.pullRequest">
         Pull request
-        <a
+        <component
+          :is="config.public.git.remote ? 'a' : 'span'"
           :href="`${config.public.git.remote}/pull/${config.public.git.pullRequest}`"
-          >#{{ config.public.git.pullRequest }}</a
+          target="_blank"
+          >#{{ config.public.git.pullRequest }}</component
         >
       </div>
     </v-footer>

@@ -16,10 +16,10 @@ export default defineNuxtConfig({
       git: {
         commit: (() => {
           if (process.env.VERCEL_GIT_COMMIT_SHA) {
-            return process.env.VERCEL_GIT_COMMIT_SHA.substring(0, 8);
+            return process.env.VERCEL_GIT_COMMIT_SHA;
           } else {
             try {
-              return spawnSync("git", ["rev-parse", "--short=8", "HEAD"])
+              return spawnSync("git", ["rev-parse", "HEAD"])
                 .stdout.toString()
                 .trim();
             } catch {
