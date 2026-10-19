@@ -5,6 +5,19 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
+  app: {
+    head: {
+      style: [
+        {
+          // In dev, component styles can load before Vuetify's core.css, which would reorder its layers
+          innerHTML:
+            "@layer vuetify-core, vuetify-components, vuetify-overrides, vuetify-utilities, vuetify-final;",
+          tagPriority: "critical",
+        },
+      ],
+    },
+  },
+
   features: {
     inlineStyles: false,
   },
