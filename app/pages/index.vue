@@ -262,292 +262,300 @@ const bestRevenue = computed(() =>
     </v-card>
 
     <v-row v-if="data">
-      <v-col
-        v-for="pool in sortedPools"
-        :key="pool.info.name"
-        cols="12"
-        md="6"
-        lg="4"
-      >
-        <v-card variant="flat" border class="pool-card">
-          <v-card-item>
-            <v-card-title class="font-weight-bold">
-              <a
-                :href="pool.info.homepage"
-                target="_blank"
-                rel="noopener"
-                class="pool-link"
-                >{{ pool.info.name
-                }}<v-icon
-                  icon="lucide:external-link"
-                  size="x-small"
-                  class="ml-1 text-medium-emphasis"
-              /></a>
-            </v-card-title>
-            <template v-if="!('fetchError' in pool)" #append>
-              <v-chip
-                size="small"
-                variant="tonal"
-                prepend-icon="lucide:gauge"
-                :title="`${$n(pool.hashrateHS)} H/s`"
-                >{{ formatMetric(pool.hashrateHS) }}H/s</v-chip
-              >
-            </template>
-          </v-card-item>
-
-          <v-card-text v-if="'fetchError' in pool">
-            <v-alert
-              type="error"
-              variant="tonal"
-              density="compact"
-              :text="formatServerError(pool.fetchError)"
-            />
-          </v-card-text>
-          <template v-else>
-            <v-card-text class="pt-1">
-              <div class="text-label-medium text-medium-emphasis">
-                {{ $t("estimatedRevenue") }}
-              </div>
-              <div class="revenue text-primary">
-                <BitcoinAmount
-                  :sats="poolRevenue[pool.id]!.revenue"
-                  :unit="units"
-                />
-                <span class="text-body-medium text-medium-emphasis">
-                  / {{ $t("perDay") }}</span
+      <TransitionGroup name="pool">
+        <v-col
+          v-for="pool in sortedPools"
+          :key="pool.info.name"
+          cols="12"
+          md="6"
+          lg="4"
+        >
+          <v-card variant="flat" border class="pool-card">
+            <v-card-item>
+              <v-card-title class="font-weight-bold">
+                <a
+                  :href="pool.info.homepage"
+                  target="_blank"
+                  rel="noopener"
+                  class="pool-link"
+                  >{{ pool.info.name
+                  }}<v-icon
+                    icon="lucide:external-link"
+                    size="x-small"
+                    class="ml-1 text-medium-emphasis"
+                /></a>
+              </v-card-title>
+              <template v-if="!('fetchError' in pool)" #append>
+                <v-chip
+                  size="small"
+                  variant="tonal"
+                  prepend-icon="lucide:gauge"
+                  :title="`${$n(pool.hashrateHS)} H/s`"
+                  >{{ formatMetric(pool.hashrateHS) }}H/s</v-chip
                 >
-              </div>
-              <v-progress-linear
-                :model-value="
-                  bestRevenue
-                    ? (poolRevenue[pool.id]!.revenue / bestRevenue) * 100
-                    : 0
-                "
-                color="primary"
-                bg-color="primary"
-                rounded
-                height="6"
-                class="my-3"
-              />
-              <div class="d-flex flex-column ga-2">
-                <div class="d-flex flex-wrap ga-2">
-                  <v-chip size="small" variant="outlined" label>{{
-                    $t("math.fee", [
-                      `${$n(pool.feeMultiple * 100, NUMBER_FORMAT)}%`,
-                    ])
-                  }}</v-chip>
-                  <v-chip
-                    v-if="pool.stratum.skimMultiple"
-                    size="small"
-                    variant="tonal"
-                    color="success"
-                    label
-                    :title="$t('math.skimExplanation')"
-                    >{{
-                      $t("math.stratumSkim", [
-                        `${$n(pool.stratum.skimMultiple * 100, NUMBER_FORMAT)}%`,
-                      ])
-                    }}</v-chip
-                  >
-                </div>
-                <div class="d-flex flex-wrap ga-2">
-                  <v-chip
-                    size="small"
-                    variant="tonal"
-                    label
-                    :color="
-                      pool.stratum.availability === 'none'
-                        ? 'success'
-                        : pool.stratum.availability === 'enforced_failover' ||
-                            pool.stratum.feeMultiple === 1
-                          ? 'warning'
-                          : 'error'
-                    "
-                    >{{
-                      $t(`stratumAvailability.${pool.stratum.availability}`, [
-                        $n(pool.stratum.feeMultiple * 100, NUMBER_FORMAT) + "%",
-                      ])
-                    }}</v-chip
-                  >
-                </div>
-              </div>
-            </v-card-text>
+              </template>
+            </v-card-item>
 
-            <v-expansion-panels
-              variant="accordion"
-              flat
-              static
-              multiple
-              class="pool-panels"
-            >
-              <v-expansion-panel>
-                <v-expansion-panel-title>
-                  <v-icon
-                    icon="lucide:calculator"
-                    size="small"
-                    class="mr-3 text-medium-emphasis"
-                  />{{ $t("math.title") }}
-                </v-expansion-panel-title>
-                <v-expansion-panel-text>
-                  <div class="math-info-body">
-                    <span
-                      ><i18n-t keypath="math.blocksPerDay"
-                        ><span class="value">{{
-                          $n(poolRevenue[pool.id]!.blocksPerDay, NUMBER_FORMAT)
-                        }}</span></i18n-t
-                      ></span
-                    >
-                    <span
-                      ><span class="value">&lowast; </span>
-                      <i18n-t keypath="math.poolShare"
-                        ><span class="value"
-                          >{{ formatMetric(yourHashrateCalculated) }}H/s /
-                          {{
-                            formatMetric(
-                              pool.hashrateHS + yourHashrateCalculated,
-                            )
-                          }}H/s &asymp;
-                          {{
-                            $n(
-                              (yourHashrateCalculated /
-                                (pool.hashrateHS + yourHashrateCalculated)) *
-                                100,
-                              NUMBER_FORMAT,
-                            )
-                          }}%</span
-                        ></i18n-t
-                      ></span
-                    >
-                    <span
-                      ><span class="value">&lowast; (</span>
-                      <i18n-t keypath="math.blockSubsidy"
-                        ><span class="value"
-                          ><BitcoinAmount
-                            :sats="poolRevenue[pool.id]!.blockSubsidy"
-                            :unit="units" /></span></i18n-t
-                      ><span class="value"> + </span
-                      ><i18n-t keypath="math.blockFee"
-                        ><span class="value"
-                          ><BitcoinAmount
-                            :sats="averageBlockFee"
-                            :unit="units" /></span></i18n-t
-                      ><span class="value">)</span></span
-                    >
-                    <span
-                      v-if="pool.feeMultiple && pool.stratum.skimMultiple"
-                      class="value"
-                      >&lowast; (
-                    </span>
-                    <span
-                      v-if="pool.feeMultiple"
-                      :class="{
-                        negative: true,
-                        grouped: pool.stratum.skimMultiple,
-                      }"
-                      ><span v-if="!pool.stratum.skimMultiple" class="value"
-                        >&lowast; (</span
-                      ><span class="value"
-                        >{{ $n(100, NUMBER_FORMAT) }}% &minus;
-                      </span>
-                      <i18n-t keypath="math.fee"
-                        ><span class="value"
-                          >{{
-                            $n(pool.feeMultiple * 100, NUMBER_FORMAT)
-                          }}%</span
-                        ></i18n-t
-                      ><span v-if="!pool.stratum.skimMultiple" class="value"
-                        >)</span
-                      ></span
-                    >
-                    <span
+            <v-card-text v-if="'fetchError' in pool">
+              <v-alert
+                type="error"
+                variant="tonal"
+                density="compact"
+                :text="formatServerError(pool.fetchError)"
+              />
+            </v-card-text>
+            <template v-else>
+              <v-card-text class="pt-1">
+                <div class="text-label-medium text-medium-emphasis">
+                  {{ $t("estimatedRevenue") }}
+                </div>
+                <div class="revenue text-primary">
+                  <BitcoinAmount
+                    :sats="poolRevenue[pool.id]!.revenue"
+                    :unit="units"
+                  />
+                  <span class="text-body-medium text-medium-emphasis">
+                    / {{ $t("perDay") }}</span
+                  >
+                </div>
+                <v-progress-linear
+                  :model-value="
+                    bestRevenue
+                      ? (poolRevenue[pool.id]!.revenue / bestRevenue) * 100
+                      : 0
+                  "
+                  color="primary"
+                  bg-color="primary"
+                  rounded
+                  height="6"
+                  class="my-3"
+                />
+                <div class="d-flex flex-column ga-2">
+                  <div class="d-flex flex-wrap ga-2">
+                    <v-chip size="small" variant="outlined" label>{{
+                      $t("math.fee", [
+                        `${$n(pool.feeMultiple * 100, NUMBER_FORMAT)}%`,
+                      ])
+                    }}</v-chip>
+                    <v-chip
                       v-if="pool.stratum.skimMultiple"
-                      :class="{ positive: true, grouped: pool.feeMultiple }"
-                      ><span v-if="!pool.feeMultiple" class="value"
-                        >&lowast; ({{ $n(100, NUMBER_FORMAT) }}% + </span
-                      ><span v-else>+ </span>
-                      <i18n-t keypath="math.stratumHashrate"
-                        ><span class="value"
-                          >{{
-                            $n(
-                              pool.stratum.hashrateMultiple * 100,
-                              NUMBER_FORMAT,
-                            )
-                          }}%</span
-                        ></i18n-t
-                      ><span class="value"> &lowast; </span
-                      ><i18n-t
-                        tag="span"
-                        class="explainer"
-                        :title="$t('math.skimExplanation')"
-                        keypath="math.stratumSkim"
-                        ><span class="value"
-                          >{{
-                            $n(pool.stratum.skimMultiple * 100, NUMBER_FORMAT)
-                          }}%</span
-                        ></i18n-t
-                      ><span v-if="!pool.feeMultiple" class="value"
-                        >)</span
-                      ></span
-                    >
-                    <span
-                      v-if="pool.feeMultiple && pool.stratum.skimMultiple"
-                      class="value"
-                      >)</span
-                    >
-                    <v-divider class="my-2" />
-                    <span class="font-weight-bold"
-                      >&asymp;
-                      <BitcoinAmount
-                        :sats="poolRevenue[pool.id]!.revenue"
-                        :unit="units"
-                      />
-                      / {{ $t("perDay") }}</span
+                      size="small"
+                      variant="tonal"
+                      color="success"
+                      label
+                      :title="$t('math.skimExplanation')"
+                      >{{
+                        $t("math.stratumSkim", [
+                          `${$n(pool.stratum.skimMultiple * 100, NUMBER_FORMAT)}%`,
+                        ])
+                      }}</v-chip
                     >
                   </div>
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-              <v-expansion-panel eager>
-                <v-expansion-panel-title>
-                  <v-icon
-                    icon="lucide:plug"
-                    size="small"
-                    class="mr-3 text-medium-emphasis"
-                  />{{ $t("connectInfo.title") }}
-                </v-expansion-panel-title>
-                <v-expansion-panel-text>
-                  <v-select
-                    v-model="poolDifficulty[pool.id].value"
-                    :label="$t('connectInfo.difficulty')"
-                    :items="
-                      Object.keys(pool.connectInfo.poolPortsByDifficulty).map(
-                        Number,
-                      )
-                    "
-                    density="compact"
-                    class="mb-3"
-                  />
-                  <v-alert
-                    v-if="pool.connectInfo.requireV3"
-                    type="warning"
-                    variant="tonal"
-                    density="compact"
-                    class="mb-3 text-body-medium"
-                    ><i18n-t keypath="connectInfo.protocolV3Warning"
-                      ><template #protocolV3
-                        ><code>protocol_v3</code></template
-                      ></i18n-t
-                    ></v-alert
-                  >
-                  <VCodeBlock
-                    class="code-block"
-                    highlightjs
-                    lang="json5"
-                    :theme="
-                      theme.current.value.dark
-                        ? 'base16-google-dark'
-                        : 'base16-google-light'
-                    "
-                    :code="`{
+                  <div class="d-flex flex-wrap ga-2">
+                    <v-chip
+                      size="small"
+                      variant="tonal"
+                      label
+                      :color="
+                        pool.stratum.availability === 'none'
+                          ? 'success'
+                          : pool.stratum.availability === 'enforced_failover' ||
+                              pool.stratum.feeMultiple === 1
+                            ? 'warning'
+                            : 'error'
+                      "
+                      >{{
+                        $t(`stratumAvailability.${pool.stratum.availability}`, [
+                          $n(pool.stratum.feeMultiple * 100, NUMBER_FORMAT) +
+                            "%",
+                        ])
+                      }}</v-chip
+                    >
+                  </div>
+                </div>
+              </v-card-text>
+
+              <v-expansion-panels
+                variant="accordion"
+                flat
+                static
+                multiple
+                class="pool-panels"
+              >
+                <v-expansion-panel>
+                  <v-expansion-panel-title>
+                    <v-icon
+                      icon="lucide:calculator"
+                      size="small"
+                      class="mr-3 text-medium-emphasis"
+                    />{{ $t("math.title") }}
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text>
+                    <div class="math-info-body">
+                      <span
+                        ><i18n-t keypath="math.blocksPerDay"
+                          ><span class="value">{{
+                            $n(
+                              poolRevenue[pool.id]!.blocksPerDay,
+                              NUMBER_FORMAT,
+                            )
+                          }}</span></i18n-t
+                        ></span
+                      >
+                      <span
+                        ><span class="value">&lowast; </span>
+                        <i18n-t keypath="math.poolShare"
+                          ><span class="value"
+                            >{{ formatMetric(yourHashrateCalculated) }}H/s /
+                            {{
+                              formatMetric(
+                                pool.hashrateHS + yourHashrateCalculated,
+                              )
+                            }}H/s &asymp;
+                            {{
+                              $n(
+                                (yourHashrateCalculated /
+                                  (pool.hashrateHS + yourHashrateCalculated)) *
+                                  100,
+                                NUMBER_FORMAT,
+                              )
+                            }}%</span
+                          ></i18n-t
+                        ></span
+                      >
+                      <span
+                        ><span class="value">&lowast; (</span>
+                        <i18n-t keypath="math.blockSubsidy"
+                          ><span class="value"
+                            ><BitcoinAmount
+                              :sats="poolRevenue[pool.id]!.blockSubsidy"
+                              :unit="units" /></span></i18n-t
+                        ><span class="value"> + </span
+                        ><i18n-t keypath="math.blockFee"
+                          ><span class="value"
+                            ><BitcoinAmount
+                              :sats="averageBlockFee"
+                              :unit="units" /></span></i18n-t
+                        ><span class="value">)</span></span
+                      >
+                      <span
+                        v-if="pool.feeMultiple && pool.stratum.skimMultiple"
+                        class="value"
+                        >&lowast; (
+                      </span>
+                      <span
+                        v-if="pool.feeMultiple"
+                        :class="{
+                          negative: true,
+                          grouped: pool.stratum.skimMultiple,
+                        }"
+                        ><span v-if="!pool.stratum.skimMultiple" class="value"
+                          >&lowast; (</span
+                        ><span class="value"
+                          >{{ $n(100, NUMBER_FORMAT) }}% &minus;
+                        </span>
+                        <i18n-t keypath="math.fee"
+                          ><span class="value"
+                            >{{
+                              $n(pool.feeMultiple * 100, NUMBER_FORMAT)
+                            }}%</span
+                          ></i18n-t
+                        ><span v-if="!pool.stratum.skimMultiple" class="value"
+                          >)</span
+                        ></span
+                      >
+                      <span
+                        v-if="pool.stratum.skimMultiple"
+                        :class="{ positive: true, grouped: pool.feeMultiple }"
+                        ><span v-if="!pool.feeMultiple" class="value"
+                          >&lowast; ({{ $n(100, NUMBER_FORMAT) }}% + </span
+                        ><span v-else>+ </span>
+                        <i18n-t keypath="math.stratumHashrate"
+                          ><span class="value"
+                            >{{
+                              $n(
+                                pool.stratum.hashrateMultiple * 100,
+                                NUMBER_FORMAT,
+                              )
+                            }}%</span
+                          ></i18n-t
+                        ><span class="value"> &lowast; </span
+                        ><i18n-t
+                          tag="span"
+                          class="explainer"
+                          :title="$t('math.skimExplanation')"
+                          keypath="math.stratumSkim"
+                          ><span class="value"
+                            >{{
+                              $n(
+                                pool.stratum.skimMultiple * 100,
+                                NUMBER_FORMAT,
+                              )
+                            }}%</span
+                          ></i18n-t
+                        ><span v-if="!pool.feeMultiple" class="value"
+                          >)</span
+                        ></span
+                      >
+                      <span
+                        v-if="pool.feeMultiple && pool.stratum.skimMultiple"
+                        class="value"
+                        >)</span
+                      >
+                      <v-divider class="my-2" />
+                      <span class="font-weight-bold"
+                        >&asymp;
+                        <BitcoinAmount
+                          :sats="poolRevenue[pool.id]!.revenue"
+                          :unit="units"
+                        />
+                        / {{ $t("perDay") }}</span
+                      >
+                    </div>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+                <v-expansion-panel eager>
+                  <v-expansion-panel-title>
+                    <v-icon
+                      icon="lucide:plug"
+                      size="small"
+                      class="mr-3 text-medium-emphasis"
+                    />{{ $t("connectInfo.title") }}
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text>
+                    <v-select
+                      v-model="poolDifficulty[pool.id].value"
+                      :label="$t('connectInfo.difficulty')"
+                      :items="
+                        Object.keys(pool.connectInfo.poolPortsByDifficulty).map(
+                          Number,
+                        )
+                      "
+                      density="compact"
+                      class="mb-3"
+                    />
+                    <v-alert
+                      v-if="pool.connectInfo.requireV3"
+                      type="warning"
+                      variant="tonal"
+                      density="compact"
+                      class="mb-3 text-body-medium"
+                      ><i18n-t keypath="connectInfo.protocolV3Warning"
+                        ><template #protocolV3
+                          ><code>protocol_v3</code></template
+                        ></i18n-t
+                      ></v-alert
+                    >
+                    <VCodeBlock
+                      class="code-block"
+                      highlightjs
+                      lang="json5"
+                      :theme="
+                        theme.current.value.dark
+                          ? 'base16-google-dark'
+                          : 'base16-google-light'
+                      "
+                      :code="`{
   &quot;datum&quot;: {
     &quot;pool_host&quot;: ${JSON.stringify(pool.connectInfo.poolHost)},
     &quot;pool_port&quot;: ${
@@ -557,13 +565,14 @@ const bestRevenue = computed(() =>
 ${pool.connectInfo.requireV3 ? `,\n    &quot;protocol_v3&quot;: true // ${$t('connectInfo.protocolV3Comment')}` : ''}
   }
 }`"
-                  />
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-            </v-expansion-panels>
-          </template>
-        </v-card>
-      </v-col>
+                    />
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </template>
+          </v-card>
+        </v-col>
+      </TransitionGroup>
     </v-row>
     <v-row v-else>
       <v-col
@@ -593,6 +602,16 @@ ${pool.connectInfo.requireV3 ? `,\n    &quot;protocol_v3&quot;: true // ${$t('co
 .sort-toggle {
   height: 48px;
   flex-shrink: 0;
+}
+
+.pool-move {
+  transition: transform 0.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pool-move {
+    transition: none;
+  }
 }
 
 .pool-card {
