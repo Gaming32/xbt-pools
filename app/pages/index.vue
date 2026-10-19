@@ -584,7 +584,7 @@ const bestRevenue = computed(() =>
                         ></i18n-t
                       ></v-alert
                     >
-                    <VCodeBlock
+                    <v-code-block
                       class="code-block"
                       highlightjs
                       lang="json5"
