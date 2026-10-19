@@ -13,6 +13,10 @@
     "all": "历史至今"
   },
   "allTimeWarning": "使用“@:{'timePeriods.all'}”平均周期时，区块手续费将仅对过去 3 年的数据取平均值（受 mempool.guide 限制）",
+  "lastRefreshed": {
+    "body": "{0}刷新",
+    "justNow": "刚刚"
+  },
   "controls": {
     "units": "单位",
     "averagingPeriod": "平均周期",

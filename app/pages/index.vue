@@ -272,7 +272,7 @@ const bestRevenue = computed(() =>
             class="d-flex align-center justify-end ga-1 mt-2 text-body-small text-medium-emphasis"
           >
             <v-icon icon="lucide:clock" size="x-small" />
-            <i18n-t keypath="lastRefreshed.body"
+            <i18n-t tag="span" keypath="lastRefreshed.body"
               ><span v-if="refreshedJustNow">{{
                 $t("lastRefreshed.justNow")
               }}</span
