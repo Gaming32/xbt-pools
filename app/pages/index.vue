@@ -13,10 +13,8 @@ import {
   type PoolFetchResult,
 } from "#shared/pools";
 import type { Comparator } from "#shared/util";
-import { VCodeBlock } from "@wdns/vue-code-block";
 import { poolRevenuePerDay, type ComputedRevenuePerDay } from "~/revenue";
 
-const theme = useTheme();
 const { locale } = useI18n();
 
 const SORT_OPTIONS = ["name", "estimatedRevenue", "hashrate"] as const;
@@ -584,15 +582,9 @@ const bestRevenue = computed(() =>
                         ></i18n-t
                       ></v-alert
                     >
-                    <v-code-block
+                    <code-block
                       class="code-block"
-                      highlightjs
                       lang="json5"
-                      :theme="
-                        theme.current.value.dark
-                          ? 'base16-google-dark'
-                          : 'base16-google-light'
-                      "
                       :code="`{
   &quot;datum&quot;: {
     &quot;pool_host&quot;: ${JSON.stringify(pool.connectInfo.poolHost)},

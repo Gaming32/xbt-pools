@@ -1,11 +1,7 @@
 import type { ServerError, TimePeriod } from "../common";
 import { fetchB2Pool } from "./b2Pool";
 import { fetchBlockvase } from "./blockvase";
-import { fetchConvoy } from "./convoy";
 import { fetchLazarus } from "./lazarus";
-import { fetchOmegaPool } from "./omega-pool";
-import { fetchPaperclipPool } from "./paperclip-pool";
-import { fetchRiptide } from "./riptide";
 import { fetchTerminusPool } from "./terminus-pool";
 
 export type DatumConnectInfo = {
@@ -48,12 +44,14 @@ export type PoolFetchError = {
 
 export type PoolFetchResult = BitcoinPool | PoolFetchError;
 
-export const SERVER_POOL_FETCHERS = {
-  convoy: fetchConvoy,
-  omegaPool: fetchOmegaPool,
-  paperclipPool: fetchPaperclipPool,
-  riptide: fetchRiptide,
-};
+// The fetchers for these live in server/utils/pool-fetch.ts, to keep them out of the client bundle
+export const SERVER_POOL_IDS = [
+  "convoy",
+  "omegaPool",
+  "paperclipPool",
+  "riptide",
+] as const;
+export type ServerPoolId = (typeof SERVER_POOL_IDS)[number];
 export const CLIENT_POOL_FETCHERS = {
   b2pool: fetchB2Pool,
   blockvase: fetchBlockvase,
@@ -62,12 +60,11 @@ export const CLIENT_POOL_FETCHERS = {
 };
 
 export type PoolFetcher = () => Promise<PoolFetchResult>;
-export type BitcoinPoolId =
-  keyof typeof SERVER_POOL_FETCHERS | keyof typeof CLIENT_POOL_FETCHERS;
+export type BitcoinPoolId = ServerPoolId | keyof typeof CLIENT_POOL_FETCHERS;
 export type FetchedPools = Record<BitcoinPoolId, PoolFetchResult>;
 
 export const BITCOIN_POOL_IDS = [
-  ...Object.keys(SERVER_POOL_FETCHERS),
+  ...SERVER_POOL_IDS,
   ...Object.keys(CLIENT_POOL_FETCHERS),
 ] as BitcoinPoolId[];
 

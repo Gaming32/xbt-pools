@@ -57,6 +57,10 @@
     "protocolV3Comment": "仅在使用 RATUM 时需要",
     "difficulty": "难度"
   },
+  "codeBlock": {
+    "copy": "复制",
+    "copied": "已复制"
+  },
   "serverError": {
     "statusCode": "状态码：{0}",
     "generalFetch": "获取数据失败：{0}"

@@ -1,4 +1,4 @@
-// Replaces the full highlight.js bundle imported by @wdns/vue-code-block, so we only ship the languages we use
+// Only register the languages we use, instead of shipping the full highlight.js bundle
 import hljs from "highlight.js/lib/core";
 import json from "highlight.js/lib/languages/json";
 

@@ -1,5 +1,4 @@
 import { spawnSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -65,21 +64,6 @@ export default defineNuxtConfig({
         pullRequest: process.env.VERCEL_GIT_PULL_REQUEST_ID,
       },
     },
-  },
-
-  vite: {
-    plugins: [
-      {
-        name: "highlight-js-core",
-        enforce: "pre",
-        resolveId(id) {
-          // Only the bare import; highlight.js/lib/* must still resolve normally
-          if (id === "highlight.js") {
-            return fileURLToPath(new URL("app/highlight.ts", import.meta.url));
-          }
-        },
-      },
-    ],
   },
 
   i18n: {

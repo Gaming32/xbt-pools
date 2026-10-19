@@ -57,6 +57,10 @@
     "protocolV3Comment": "Only required when using RATUM",
     "difficulty": "Difficulty"
   },
+  "codeBlock": {
+    "copy": "Copy",
+    "copied": "Copied"
+  },
   "serverError": {
     "statusCode": "Status code {0}",
     "generalFetch": "Failed to fetch: {0}"
