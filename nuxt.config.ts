@@ -1,11 +1,16 @@
 import { spawnSync } from "node:child_process";
 
+const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
   app: {
+    cdnURL: siteUrl,
     head: {
       link: [
         {
@@ -93,9 +98,7 @@ export default defineNuxtConfig({
   i18n: {
     defaultLocale: "en",
     strategy: "no_prefix",
-    baseUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : "http://localhost:3000",
+    baseUrl: siteUrl,
     locales: [
       { code: "en", name: "English", language: "en-US", file: "en.json" },
       { code: "zh", name: "中文", language: "zh-CN", file: "zh.json" },
