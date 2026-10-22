@@ -75,13 +75,16 @@ export default defineNuxtConfig({
             }
           }
         })(),
-        dirty: (() => {
-          try {
-            return !!spawnSync("git", ["status", "--porcelain"]).stdout.length;
-          } catch {
-            return undefined;
-          }
-        })(),
+        dirty:
+          !process.env.VERCEL &&
+          (() => {
+            try {
+              return !!spawnSync("git", ["status", "--porcelain"]).stdout
+                .length;
+            } catch {
+              return undefined;
+            }
+          })(),
         pullRequest: process.env.VERCEL_GIT_PULL_REQUEST_ID,
       },
     },
