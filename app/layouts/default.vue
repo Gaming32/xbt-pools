@@ -88,7 +88,7 @@ async function toggleTheme(event: MouseEvent) {
       <v-app-bar-title class="ms-3">
         <NuxtLink to="/" class="home-link">
           <v-avatar color="primary" size="36" class="mr-5">
-            <v-icon icon="lucide:bitcoin" />
+            <v-icon icon="lucide:bitcoin" color="#fff" />
           </v-avatar>
           <span class="font-weight-bold">{{ $t("title") }}</span>
         </NuxtLink>

@@ -7,6 +7,19 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      link: [
+        {
+          rel: "icon",
+          type: "image/svg+xml",
+          sizes: "any",
+          href: "/favicon.svg",
+        },
+        {
+          rel: "icon",
+          type: "image/x-icon",
+          href: "/favicon.ico",
+        },
+      ],
       style: [
         {
           // In dev, component styles can load before Vuetify's core.css, which would reorder its layers
