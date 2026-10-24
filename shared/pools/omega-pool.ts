@@ -17,7 +17,7 @@ type StatsResponse = {
   };
 };
 
-const INFO = { name: "OmegaPool", homepage: "https://omegapool.tech/" };
+const INFO = { name: "Omega Pool", homepage: "https://omegapool.tech/" };
 const START_DATE = /* @__PURE__ */ new Date("2026-08-30T19:06:56Z").getTime(); // Block height 961866
 
 export async function fetchOmegaPool(): Promise<PoolFetchResult> {
