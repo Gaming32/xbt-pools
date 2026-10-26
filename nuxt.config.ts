@@ -36,6 +36,11 @@ export default defineNuxtConfig({
     },
   },
 
+  experimental: {
+    appManifest: true,
+    checkOutdatedBuildInterval: 60 * 60 * 1000,
+  },
+
   css: ["vuetify/styles/utilities"],
 
   postcss: {

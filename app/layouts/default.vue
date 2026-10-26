@@ -79,6 +79,11 @@ async function toggleTheme(event: MouseEvent) {
   );
   root.classList.remove("theme-switching");
 }
+
+const siteOutdated = ref(false);
+useRuntimeHook("app:manifest:update", () => {
+  siteOutdated.value = true;
+});
 </script>
 
 <template>
@@ -133,6 +138,16 @@ async function toggleTheme(event: MouseEvent) {
     <v-main
       :style="mounted ? undefined : { '--v-layout-top': `${APP_BAR_HEIGHT}px` }"
     >
+      <v-expand-transition eager>
+        <div v-if="siteOutdated">
+          <v-banner color="warning">
+            <template #text>{{ $t("siteOutdatedBanner") }}</template>
+            <template #actions>
+              <v-btn @click="reloadNuxtApp">{{ $t("controls.refresh") }}</v-btn>
+            </template>
+          </v-banner>
+        </div>
+      </v-expand-transition>
       <slot />
     </v-main>
     <v-footer

@@ -2,6 +2,7 @@
   "title": "DATUM Pools",
   "subtitle": "Compare estimated mining revenue across DATUM pools",
   "toggleTheme": "Toggle dark mode",
+  "siteOutdatedBanner": "You are on an outdated version of the website. Please refresh the page to see the latest version of the site.",
   "bitcoinUnits": {
     "btc": "Bitcoin",
     "sat": "Satoshis"

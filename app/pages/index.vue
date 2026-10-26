@@ -180,6 +180,11 @@ watch(data, () => {
 const bestRevenue = computed(() =>
   Math.max(0, ...Object.values(poolRevenue.value).map((r) => r.revenue)),
 );
+
+const siteOutdated = ref(false);
+useRuntimeHook("app:manifest:update", () => {
+  siteOutdated.value = true;
+});
 </script>
 
 <template>
@@ -259,7 +264,7 @@ const bestRevenue = computed(() =>
                 :title="$t('controls.refresh')"
                 :aria-label="$t('controls.refresh')"
                 :loading="data && pending"
-                @click="refresh()"
+                @click="siteOutdated ? reloadNuxtApp() : refresh()"
               />
             </div>
           </v-col>
