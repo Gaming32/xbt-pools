@@ -1,5 +1,9 @@
 import type { PoolFetchResult } from ".";
-import { fetchPrimaryAndMempool, handleFetchError } from "./util";
+import {
+  fetchPrimaryAndMempool,
+  handleFetchError,
+  safeHashrateDivide,
+} from "./util";
 
 type PoolResponse = {
   nethash: {
@@ -33,8 +37,10 @@ export async function fetchBlockvase(): Promise<PoolFetchResult> {
       hashrateHS: poolResponse.nethash.pool_hs,
       feeMultiple: poolResponse.pool.fee_percent / 100,
       stratum: {
-        hashrateMultiple:
-          poolResponse.nethash.sv1_hs / poolResponse.nethash.pool_hs,
+        hashrateMultiple: safeHashrateDivide(
+          poolResponse.nethash.sv1_hs,
+          poolResponse.nethash.pool_hs,
+        ),
         skimMultiple: 0,
         availability: "none",
         feeMultiple: poolResponse.pool.fee_percent / 100,

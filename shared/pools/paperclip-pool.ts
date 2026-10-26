@@ -1,6 +1,10 @@
 import type { PoolFetchResult } from ".";
 import { MULTIPLE_PER_BPS } from "../common";
-import { fetchPrimaryAndMempool, handleFetchError } from "./util";
+import {
+  fetchPrimaryAndMempool,
+  handleFetchError,
+  safeHashrateDivide,
+} from "./util";
 
 type StatusResponse = {
   stats: {
@@ -42,9 +46,10 @@ export async function fetchPaperclipPool(): Promise<PoolFetchResult> {
       hashrateHS: statusResponse.stats.hashrate.pool_hs,
       feeMultiple: statusResponse.stats.pool.fee_bps / MULTIPLE_PER_BPS,
       stratum: {
-        hashrateMultiple:
-          statusResponse.stats.hashrate.stratum_hs /
+        hashrateMultiple: safeHashrateDivide(
+          statusResponse.stats.hashrate.stratum_hs,
           statusResponse.stats.hashrate.pool_hs,
+        ),
         skimMultiple:
           statusResponse.stats.pool.incentives.datum_bonus_bps /
           MULTIPLE_PER_BPS,

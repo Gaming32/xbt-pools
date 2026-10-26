@@ -36,5 +36,15 @@ export function fetchPrimaryAndMempool<P>(
   ]);
 }
 
+export function safeHashrateDivide(num: number, den: number) {
+  if (den === 0) {
+    if (num !== 0) {
+      console.error("Attempt to divide hashrate", num, "by 0");
+    }
+    return 0;
+  }
+  return num / den;
+}
+
 export const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
 export const ONE_WEEK_IN_SECONDS = ONE_DAY_IN_SECONDS * 7;
