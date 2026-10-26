@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  BITCOIN_UNITS,
   HS_PER_THS,
   TIME_PERIODS,
   type BitcoinUnit,
@@ -210,12 +209,32 @@ useRuntimeHook("app:manifest:update", () => {
             </div>
           </v-col>
           <v-col cols="6" sm="3" md="2">
-            <SimpleSelect
-              v-model="units"
-              :label="$t('controls.units')"
-              :options="BITCOIN_UNITS"
-              lang-key="bitcoinUnits"
-            />
+            <v-field :label="$t('controls.units')" variant="outlined" active>
+              <div class="w-100">
+                <v-btn-toggle
+                  v-model="units"
+                  mandatory
+                  color="primary"
+                  variant="text"
+                  class="d-flex w-100"
+                >
+                  <v-btn
+                    value="btc"
+                    size="large"
+                    class="flex-grow-1"
+                    :title="$t('bitcoinUnits.btc')"
+                    >₿</v-btn
+                  >
+                  <v-btn
+                    value="sat"
+                    size="large"
+                    class="flex-grow-1"
+                    :title="$t('bitcoinUnits.sat')"
+                    ><i class="fak fa-regular"
+                  /></v-btn>
+                </v-btn-toggle>
+              </div>
+            </v-field>
           </v-col>
           <v-col cols="6" sm="3" md="2">
             <SimpleSelect
