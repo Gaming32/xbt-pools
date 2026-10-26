@@ -2,6 +2,7 @@
   "title": "DATUM 矿池",
   "subtitle": "比较各 DATUM 矿池的预估挖矿收益",
   "toggleTheme": "切换深色模式",
+  "siteOutdatedBanner": "您正在使用旧版本的网站。请刷新页面以查看最新版本。",
   "bitcoinUnits": {
     "btc": "比特币",
     "sat": "聪"
