@@ -173,6 +173,15 @@ useRuntimeHook("app:manifest:update", () => {
           >#{{ config.public.git.pullRequest }}</component
         >
       </div>
+      <div v-if="config.public.git.remote">
+        <i18n-t keypath="footer.suggestPool.text"
+          ><a
+            :href="`${config.public.git.remote}/issues/new?title=[Pool Suggestion]+&body=<!-- ${encodeURIComponent($t('footer.suggestPool.bodyComment'))} -->%0A%0A`"
+            target="_blank"
+            >{{ $t("footer.suggestPool.linkText") }}</a
+          ></i18n-t
+        >
+      </div>
     </v-footer>
   </v-app>
 </template>
