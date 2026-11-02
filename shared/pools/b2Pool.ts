@@ -4,7 +4,7 @@ import { findBestPing } from "../util";
 import { handleFetchError } from "./util";
 
 type VarDiffCompatiblePort = {
-  protocol: "stratum-v1" | "stratum-v2" | "datum";
+  protocol: "stratum-v1" | "stratum-v2" | "datum" | "datum-prime";
   varDiff: {
     minDiff: number;
   };
@@ -74,7 +74,7 @@ export async function fetchB2Pool(): Promise<PoolFetchResult> {
           Object.entries(poolResponse.pool.ports)
             .filter(
               (entry): entry is [string, VarDiffCompatiblePort] =>
-                entry[1].protocol === "datum",
+                entry[1].protocol === "datum-prime",
             )
             .map(([port, info]) => [info.varDiff.minDiff, +port] as const)
             .sort(([diffA], [diffB]) => diffA - diffB),
