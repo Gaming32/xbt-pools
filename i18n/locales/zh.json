@@ -13,7 +13,8 @@
     "all": "历史至今"
   },
   "warning": {
-    "allTime": "使用“@:{'timePeriods.all'}”平均周期时，区块手续费将仅对过去 3 年的数据取平均值（受 mempool.guide 限制）"
+    "allTime": "使用“@:{'timePeriods.all'}”平均周期时，区块手续费将仅对过去 3 年的数据取平均值（受 mempool.guide 限制）",
+    "highPool": "某个矿池的收益似乎异常偏高。这可能是因为该矿池的算力突然大幅下降，而这一变化尚未体现在平均周期内该矿池挖出的区块数量中。使用该矿池前，请先访问其官网进行确认。"
   },
   "lastRefreshed": {
     "body": "{0}刷新",

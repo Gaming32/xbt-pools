@@ -14,7 +14,7 @@
   },
   "warning": {
     "allTime": "When using the \"@:{'timePeriods.all'}\" averaging period, block fees will instead be averaged over the last 3 years (mempool.guide limitation)",
-    "highPool": "A pool appears to have a very high revenue. This can be caused by that pool suffering a sudden drop in hashrate, which is not reflected in the number of blocks earned by that pool over the averaging period. Please check with the pool's website before using it."
+    "highPool": "A pool appears to have a very high revenue. This can be caused by that pool suffering a sudden drop in hashrate, which is not yet reflected in the number of blocks earned by that pool over the averaging period. Please check with the pool's website before using it."
   },
   "lastRefreshed": {
     "body": "Refreshed {0}",
