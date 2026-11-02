@@ -95,7 +95,7 @@ useRuntimeHook("app:manifest:update", () => {
           <v-avatar color="primary" size="36" class="mr-5">
             <v-icon icon="lucide:bitcoin" color="#fff" />
           </v-avatar>
-          <span class="font-weight-bold">{{ $t("title") }}</span>
+          <span class="font-weight-bold text-truncate">{{ $t("title") }}</span>
         </NuxtLink>
         <span
           class="text-medium-emphasis text-body-medium ml-3 d-none d-md-inline"
@@ -190,6 +190,7 @@ useRuntimeHook("app:manifest:update", () => {
   vertical-align: middle;
   color: inherit;
   text-decoration: none;
+  max-width: 100%;
 }
 
 .theme-switching *,
