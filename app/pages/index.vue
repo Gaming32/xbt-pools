@@ -239,15 +239,13 @@ useRuntimeHook("app:manifest:update", () => {
                 >
                   <v-btn
                     value="btc"
-                    size="large"
-                    class="flex-grow-1"
+                    class="flex-grow-1 w-50"
                     :title="$t('bitcoinUnits.btc')"
                     >₿</v-btn
                   >
                   <v-btn
                     value="sat"
-                    size="large"
-                    class="flex-grow-1"
+                    class="flex-grow-1 w-50"
                     :title="$t('bitcoinUnits.sat')"
                     ><i class="fak fa-regular"
                   /></v-btn>
