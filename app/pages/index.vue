@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  COIN,
   HS_PER_THS,
   TIME_PERIODS,
   type BitcoinUnit,
@@ -83,13 +84,16 @@ const poolRevenue = computed(() => {
 type PoolWithId = BitcoinPool & { id: BitcoinPoolId };
 type FetchResultWithId = PoolFetchResult & { id: BitcoinPoolId };
 
-const sortedPools = computed(() => {
+function sortPools(
+  sortOption: (typeof SORT_OPTIONS)[number],
+  sortDirection: (typeof SORT_DIRECTIONS)[number],
+): FetchResultWithId[] {
   if (!data.value) {
     return [];
   }
 
   let baseComparator: Comparator<PoolWithId>;
-  switch (sortOption.value) {
+  switch (sortOption) {
     case "name":
       baseComparator = (a, b) => a.info.name.localeCompare(b.info.name);
       break;
@@ -103,7 +107,7 @@ const sortedPools = computed(() => {
   }
 
   let directionComparator: Comparator<PoolWithId>;
-  switch (sortDirection.value) {
+  switch (sortDirection) {
     case "asc":
       directionComparator = baseComparator;
       break;
@@ -130,7 +134,16 @@ const sortedPools = computed(() => {
   return Object.entries(data.value.pools)
     .map(([id, pool]) => ({ id: id as BitcoinPoolId, ...pool }))
     .sort(comparator);
-});
+}
+
+const sortedPools = computed(() =>
+  sortPools(sortOption.value, sortDirection.value),
+);
+const poolsByRevenue = computed(() =>
+  sortPools("estimatedRevenue", "desc").filter(
+    (p): p is PoolWithId => !("fetchError" in p),
+  ),
+);
 
 const averageBlockFee = computed(() => {
   if (!data.value) {
@@ -176,9 +189,15 @@ watch(data, () => {
   }
 });
 
-const bestRevenue = computed(() =>
-  Math.max(0, ...Object.values(poolRevenue.value).map((r) => r.revenue)),
-);
+function poolRevenueIndex(index: number) {
+  return (
+    (poolsByRevenue.value[index] &&
+      poolRevenue.value[poolsByRevenue.value[index]?.id]?.revenue) ||
+    0
+  );
+}
+
+const bestRevenue = computed(() => poolRevenueIndex(0));
 
 const siteOutdated = ref(false);
 useRuntimeHook("app:manifest:update", () => {
@@ -313,13 +332,31 @@ useRuntimeHook("app:manifest:update", () => {
               type="warning"
               variant="tonal"
               density="compact"
-              class="mt-4"
-              :text="$t('allTimeWarning')"
+              class="mt-3"
+              :text="$t('warning.allTime')"
             />
           </div>
         </v-expand-transition>
       </v-card-text>
     </v-card>
+
+    <v-expand-transition>
+      <div
+        v-if="
+          bestRevenue > 0.05 * COIN &&
+          poolRevenueIndex(1) < 0.6 * bestRevenue &&
+          (poolsByRevenue[0]?.hashrateHS ?? 0) < 1000 * HS_PER_THS
+        "
+      >
+        <v-alert
+          type="warning"
+          variant="tonal"
+          density="compact"
+          class="mb-3"
+          :text="$t('warning.highPool')"
+        />
+      </div>
+    </v-expand-transition>
 
     <v-row v-if="data">
       <TransitionGroup name="pool">
@@ -628,7 +665,7 @@ ${pool.connectInfo.requireV3 ? `,\n    &quot;protocol_v3&quot;: true // ${$t('co
         </v-col>
       </TransitionGroup>
     </v-row>
-    <v-row v-else>
+    <v-row v-else class="mt-3">
       <v-col
         v-for="n in BITCOIN_POOL_IDS.length"
         :key="n"
