@@ -343,7 +343,7 @@ useRuntimeHook("app:manifest:update", () => {
     <v-expand-transition>
       <div
         v-if="
-          bestRevenue > 0.05 * COIN &&
+          (bestRevenue / yourHashrateCalculated) * HS_PER_THS > 0.015 * COIN &&
           poolRevenueIndex(1) < 0.6 * bestRevenue &&
           (poolsByRevenue[0]?.hashrateHS ?? 0) < 1000 * HS_PER_THS
         "
