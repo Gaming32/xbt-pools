@@ -48,7 +48,7 @@
     "title": "收益计算表",
     "blocksPerDay": "每日矿池出块 {0}（平均）",
     "poolShare": "您的矿池算力占比 {0}",
-    "blockSubsidy": "区块奖励 {0}",
+    "blockSubsidy": "区块补贴 {0}",
     "blockFee": "区块手续费 {0}（平均）",
     "fee": "{0} 手续费",
     "stratumHashrate": "{0} Sv1 算力",
@@ -57,7 +57,7 @@
   },
   "connectInfo": {
     "title": "连接信息",
-    "difficulty": "难度"
+    "minDiff": "最低难度"
   },
   "codeBlock": {
     "copy": "复制",
