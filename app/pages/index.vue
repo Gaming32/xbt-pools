@@ -13,9 +13,11 @@ import {
   type PoolFetchResult,
 } from "#shared/pools";
 import type { Comparator } from "#shared/util";
+import { useSatsSymbol } from "~/composables/useSatsSymbol";
 import { poolRevenuePerDay, type ComputedRevenuePerDay } from "~/revenue";
 
 const { locale } = useI18n();
+useSatsSymbol();
 
 const SORT_OPTIONS = ["name", "estimatedRevenue", "hashrate"] as const;
 const SORT_DIRECTIONS = ["asc", "desc"] as const;

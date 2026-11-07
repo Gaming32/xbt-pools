@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { COIN, type BitcoinUnit } from "#shared/common";
+import { useSatsSymbol } from "~/composables/useSatsSymbol";
 
 defineProps<{
   sats: number;
   unit: BitcoinUnit;
 }>();
 
-useScript("https://kit.fontawesome.com/090ca49637.js");
+useSatsSymbol();
 </script>
 
 <template>
