@@ -57,7 +57,7 @@
   },
   "connectInfo": {
     "title": "Connection info",
-    "difficulty": "Difficulty"
+    "minDiff": "Minimum difficulty"
   },
   "codeBlock": {
     "copy": "Copy",

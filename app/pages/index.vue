@@ -182,11 +182,12 @@ watch(data, () => {
     if (!poolDifficulty[poolId].value) {
       const pool = data.value.pools[poolId];
       if ("fetchError" in pool) continue;
-      poolDifficulty[poolId].value = Object.keys(
+      const difficulties = Object.keys(
         pool.connectInfo.poolPortsByDifficulty,
-      )
-        .map(Number)
-        .find((d) => d >= 1024);
+      ).map(Number);
+      poolDifficulty[poolId].value =
+        difficulties.find((d) => d >= 1024) ??
+        difficulties[difficulties.length - 1];
     }
   }
 });
@@ -622,12 +623,13 @@ useRuntimeHook("app:manifest:update", () => {
                   <v-expansion-panel-text>
                     <v-select
                       v-model="poolDifficulty[pool.id].value"
-                      :label="$t('connectInfo.difficulty')"
+                      :label="$t('connectInfo.minDiff')"
                       :items="
                         Object.keys(pool.connectInfo.poolPortsByDifficulty).map(
                           Number,
                         )
                       "
+                      :item-title="formatDifficulty"
                       density="compact"
                       class="mb-3"
                     />
