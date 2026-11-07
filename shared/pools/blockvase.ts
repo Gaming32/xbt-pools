@@ -56,7 +56,6 @@ export async function fetchBlockvase(): Promise<PoolFetchResult> {
           [poolResponse.status.min_difficulty]: poolResponse.pool.datum_port,
         },
         poolPubkey: poolResponse.pool.pool_pubkey,
-        requireV3: false,
       },
     };
   } catch (err) {

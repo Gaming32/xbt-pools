@@ -48,7 +48,6 @@ export async function fetchOmegaPool(): Promise<PoolFetchResult> {
           [statsResponse.pool.min_difficulty]: statsResponse.pool.datum_port,
         },
         poolPubkey: statsResponse.pool.pubkey,
-        requireV3: false,
       },
     };
   } catch (err) {

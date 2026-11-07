@@ -46,7 +46,6 @@ export async function fetchLazarus(): Promise<PoolFetchResult> {
         poolHost: poolResponse.datum.pool_host,
         poolPortsByDifficulty: { 1024: poolResponse.datum.pool_port },
         poolPubkey: poolResponse.datum.pool_pubkey,
-        requireV3: false,
       },
     };
   } catch (err) {

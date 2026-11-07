@@ -38,7 +38,6 @@ export async function fetchTerminusPool(): Promise<PoolFetchResult> {
         poolHost: "datum.terminuspool.xyz",
         poolPortsByDifficulty: { [statsResponse.shareDifficulty]: 28915 },
         poolPubkey: statsResponse.primePubkey,
-        requireV3: false,
       },
     };
   } catch (err) {

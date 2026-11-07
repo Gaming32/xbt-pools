@@ -70,7 +70,6 @@ export async function fetchPaperclipPool(): Promise<PoolFetchResult> {
             statusResponse.stats.pool.datum_port,
         },
         poolPubkey: statusResponse.stats.pool.pubkey,
-        requireV3: true,
       },
     };
   } catch (err) {

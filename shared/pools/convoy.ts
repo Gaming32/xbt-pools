@@ -51,7 +51,6 @@ export async function fetchConvoy(): Promise<PoolFetchResult> {
         poolPortsByDifficulty: { 16384: 28915 },
         poolPubkey:
           "dbb11fa0c2b5403e4f798fa6071bb97e6079d219598366032fdf2ae01962b13c5e66e2be7d6b008f0b2603f3e6f6fc64768fa786c8129c46d3e30a5867734b62",
-        requireV3: true,
       },
     };
   } catch (err) {

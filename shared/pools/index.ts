@@ -33,7 +33,6 @@ export type BitcoinPool = {
     poolHost: string;
     poolPortsByDifficulty: Record<number, number>;
     poolPubkey: string;
-    requireV3: boolean;
   };
 };
 

@@ -57,8 +57,6 @@
   },
   "connectInfo": {
     "title": "连接信息",
-    "protocolV3Warning": "该矿池要求使用 CONVOY 的 DATUM 分支进行连接，或者在使用 RATUM 时启用 {protocolV3} 设置",
-    "protocolV3Comment": "仅在使用 RATUM 时需要",
     "difficulty": "难度"
   },
   "codeBlock": {

@@ -56,7 +56,6 @@ export async function fetchRiptide(): Promise<PoolFetchResult> {
           32768: 29121,
         },
         poolPubkey: infoResponse.join.pool_pubkey,
-        requireV3: false,
       },
     };
   } catch (err) {

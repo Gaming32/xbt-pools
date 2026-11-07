@@ -631,29 +631,16 @@ useRuntimeHook("app:manifest:update", () => {
                       density="compact"
                       class="mb-3"
                     />
-                    <v-alert
-                      v-if="pool.connectInfo.requireV3"
-                      type="warning"
-                      variant="tonal"
-                      density="compact"
-                      class="mb-3 text-body-medium"
-                      ><i18n-t keypath="connectInfo.protocolV3Warning"
-                        ><template #protocolV3
-                          ><code>protocol_v3</code></template
-                        ></i18n-t
-                      ></v-alert
-                    >
                     <code-block
                       class="code-block"
-                      lang="json5"
+                      lang="json"
                       :code="`{
   &quot;datum&quot;: {
     &quot;pool_host&quot;: ${JSON.stringify(pool.connectInfo.poolHost)},
     &quot;pool_port&quot;: ${
       pool.connectInfo.poolPortsByDifficulty[poolDifficulty[pool.id].value!]
     },
-    &quot;pool_pubkey&quot;: ${JSON.stringify(pool.connectInfo.poolPubkey)}\
-${pool.connectInfo.requireV3 ? `,\n    &quot;protocol_v3&quot;: true // ${$t('connectInfo.protocolV3Comment')}` : ''}
+    &quot;pool_pubkey&quot;: ${JSON.stringify(pool.connectInfo.poolPubkey)}
   }
 }`"
                     />
