@@ -24,10 +24,10 @@ export async function fetchTerminusPool(): Promise<PoolFetchResult> {
       hashrateHS: statsResponse.hashrate * HS_PER_THS,
       feeMultiple: 0,
       stratum: {
-        hashrateMultiple: 0,
-        skimMultiple: 0,
-        availability: "none",
-        feeMultiple: 0,
+        hashrateMultiple: 0, // TODO: Waiting for kyle133 to add this to the API
+        skimMultiple: 1,
+        availability: "available",
+        feeMultiple: 1,
       },
       blocksInPeriod: {
         ...mempoolPool.blockCount,
