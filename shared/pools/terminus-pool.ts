@@ -4,6 +4,7 @@ import { fetchPrimaryAndMempool, handleFetchError } from "./util";
 
 type StatsResponse = {
   primePubkey: string;
+  sv1HashratePercent: number;
   hashrate: number;
   shareDifficulty: number;
   blocks: number;
@@ -24,7 +25,7 @@ export async function fetchTerminusPool(): Promise<PoolFetchResult> {
       hashrateHS: statsResponse.hashrate * HS_PER_THS,
       feeMultiple: 0,
       stratum: {
-        hashrateMultiple: 0, // TODO: Waiting for kyle133 to add this to the API
+        hashrateMultiple: statsResponse.sv1HashratePercent / 100,
         skimMultiple: 1,
         availability: "available",
         feeMultiple: 1,
